@@ -1,0 +1,59 @@
+-- =====================================================
+-- SCRIPT COMPLETO PARA CREAR LA BASE DE DATOS
+-- =====================================================
+
+-- 1. Eliminar la base de datos si ya existe (¡CUIDADO! Borra todo)
+DROP DATABASE IF EXISTS gestion_tareas;
+
+-- 2. Crear la base de datos nueva
+CREATE DATABASE gestion_tareas
+CHARACTER SET utf8mb4 
+COLLATE utf8mb4_unicode_ci;
+
+-- 3. Usar la base de datos
+USE gestion_tareas;
+
+-- 4. Crear tabla de usuarios
+CREATE TABLE usuarios (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    rol ENUM('admin', 'usuario') DEFAULT 'usuario',
+    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    activo BOOLEAN DEFAULT TRUE
+);
+
+-- 5. Crear tabla de tareas
+CREATE TABLE tareas (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    usuario_id INT NOT NULL,
+    titulo VARCHAR(150) NOT NULL,
+    descripcion TEXT,
+    fecha_limite DATE,
+    prioridad ENUM('alta', 'media', 'baja') DEFAULT 'media',
+    estado ENUM('pendiente', 'en_progreso', 'completada', 'cancelada') DEFAULT 'pendiente',
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    INDEX idx_estado (estado),
+    INDEX idx_fecha_limite (fecha_limite)
+);
+
+-- 6. Insertar usuarios de prueba
+INSERT INTO usuarios (nombre, email, password, rol) VALUES
+('Admin', 'admin@example.com', 'admin123', 'admin'),
+('Juan Pérez', 'juan@example.com', 'juan123', 'usuario'),
+('María García', 'maria@example.com', 'maria123', 'usuario');
+
+-- 7. Insertar tareas de ejemplo
+INSERT INTO tareas (usuario_id, titulo, descripcion, fecha_limite, prioridad, estado) VALUES
+(1, 'Completar informe mensual', 'Preparar el reporte de ventas de marzo', '2026-05-15', 'alta', 'en_progreso'),
+(1, 'Revisar código del proyecto', 'Hacer code review de las nuevas features', '2026-05-10', 'media', 'pendiente'),
+(2, 'Comprar suministros', 'Papel, tinta y carpetas para la oficina', '2026-05-05', 'baja', 'completada'),
+(2, 'Actualizar documentación', 'Actualizar manual de usuario del sistema', '2026-05-20', 'media', 'pendiente'),
+(3, 'Preparar presentación', 'Crear slides para reunión con clientes', '2026-05-12', 'alta', 'pendiente');
+
+-- 8. Verificar que todo se creó correctamente
+SELECT 'Base de datos creada exitosamente' as Mensaje;
+SHOW TABLES;
