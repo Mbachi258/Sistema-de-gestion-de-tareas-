@@ -8,9 +8,9 @@ public class DatabaseConnection {
 
     public static Connection getConnection() throws SQLException {
         
-        String url = "jdbc:mysql://localhost:3308/gestion_tareas?useSSL=false&allowPublicKeyRetrieval=true";
+        String url = "jdbc:mysql://localhost:3306/gestion_tareas?useSSL=false&allowPublicKeyRetrieval=true";
 String user = "root";
-String password = ""; // o tu contraseña si la tienes
+String password = ""; 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             return DriverManager.getConnection(url, user, password);

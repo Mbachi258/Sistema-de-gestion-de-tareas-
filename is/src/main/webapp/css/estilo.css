@@ -1,0 +1,120 @@
+/* =============================================
+   ESTILOS PARA EL SISTEMA DE GESTIÓN DE TAREAS
+   ============================================= */
+
+/* Fondo de pantalla con gradiente */
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+   background-image: url('https://www.muycomputer.com/wp-content/uploads/2023/04/gestion_de_tareas.jpg');
+}
+
+/* Tarjeta de login */
+.login-card {
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.login-card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-align: center;
+    border-radius: 1rem 1rem 0 0 !important;
+    padding: 1.5rem;
+}
+
+/* Botón de login */
+.btn-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn-gradient:hover {
+    opacity: 0.9;
+    transform: scale(1.02);
+}
+
+/* Focus en campos de formulario */
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+/* Alertas personalizadas */
+.alert-custom {
+    border-radius: 0.5rem;
+}
+
+/* Navbar personalizada */
+.navbar-custom {
+    background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+/* Tarjeta de dashboard */
+.dashboard-card {
+    border-radius: 1rem;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Sidebar para admin */
+.sidebar {
+    background: linear-gradient(180deg, #667eea, #764ba2);
+    min-height: 100vh;
+    color: white;
+}
+
+.sidebar a {
+    color: white;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.sidebar a:hover {
+    padding-left: 10px;
+    color: white;
+    opacity: 0.8;
+}
+
+/* Tablas responsivas */
+.table-custom {
+    background: white;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.table-custom thead {
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    color: white;
+}
+
+/* Animación de fade in */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
