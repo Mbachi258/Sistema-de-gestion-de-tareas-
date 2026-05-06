@@ -1,19 +1,24 @@
--- =====================================================
--- SCRIPT COMPLETO PARA CREAR LA BASE DE DATOS
--- =====================================================
+-- =============================================
+-- SCRIPT COMPLETO DE BASE DE DATOS
+-- SISTEMA DE GESTIÓN DE TAREAS CON GRUPOS
+-- =============================================
 
--- 1. Eliminar la base de datos si ya existe (¡CUIDADO! Borra todo)
-DROP DATABASE IF EXISTS gestion_tareas;
+-- Eliminar la base de datos si existe (opcional)
+-- DROP DATABASE IF EXISTS gestion_tareas;
 
--- 2. Crear la base de datos nueva
+-- Crear la base de datos
 CREATE DATABASE gestion_tareas
 CHARACTER SET utf8mb4 
 COLLATE utf8mb4_unicode_ci;
 
--- 3. Usar la base de datos
+-- Usar la base de datos
 USE gestion_tareas;
 
--- 4. Crear tabla de usuarios
+-- =============================================
+-- CREAR TABLAS
+-- =============================================
+
+-- 1. Tabla de usuarios
 CREATE TABLE usuarios (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(50) NOT NULL,
@@ -24,36 +29,223 @@ CREATE TABLE usuarios (
     activo BOOLEAN DEFAULT TRUE
 );
 
--- 5. Crear tabla de tareas
+-- 2. Tabla de grupos
+CREATE TABLE grupos (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion TEXT,
+    admin_id INT NOT NULL,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    activo BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (admin_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+-- 3. Tabla de grupo_usuarios (relación muchos a muchos)
+CREATE TABLE grupo_usuarios (
+    grupo_id INT NOT NULL,
+    usuario_id INT NOT NULL,
+    fecha_union TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    activo BOOLEAN DEFAULT TRUE,
+    PRIMARY KEY (grupo_id, usuario_id),
+    FOREIGN KEY (grupo_id) REFERENCES grupos(id) ON DELETE CASCADE,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+-- 4. Tabla de tareas
 CREATE TABLE tareas (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    usuario_id INT NOT NULL,
     titulo VARCHAR(150) NOT NULL,
     descripcion TEXT,
+    usuario_id INT NOT NULL,
+    grupo_id INT NOT NULL,
+    asignado_por INT NOT NULL,
     fecha_limite DATE,
     prioridad ENUM('alta', 'media', 'baja') DEFAULT 'media',
     estado ENUM('pendiente', 'en_progreso', 'completada', 'cancelada') DEFAULT 'pendiente',
+    progreso INT DEFAULT 0,
+    comentarios TEXT,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
-    INDEX idx_estado (estado),
-    INDEX idx_fecha_limite (fecha_limite)
+    FOREIGN KEY (grupo_id) REFERENCES grupos(id) ON DELETE CASCADE,
+    FOREIGN KEY (asignado_por) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
--- 6. Insertar usuarios de prueba
+-- =============================================
+-- CREAR ÍNDICES PARA MEJORAR EL RENDIMIENTO
+-- =============================================
+
+-- Índices para la tabla usuarios
+CREATE INDEX idx_usuarios_email ON usuarios(email);
+CREATE INDEX idx_usuarios_rol ON usuarios(rol);
+
+-- Índices para la tabla grupos
+CREATE INDEX idx_grupos_admin ON grupos(admin_id);
+CREATE INDEX idx_grupos_activo ON grupos(activo);
+
+-- Índices para la tabla grupo_usuarios
+CREATE INDEX idx_grupo_usuarios_usuario ON grupo_usuarios(usuario_id);
+CREATE INDEX idx_grupo_usuarios_activo ON grupo_usuarios(activo);
+
+-- Índices para la tabla tareas
+CREATE INDEX idx_tareas_usuario ON tareas(usuario_id);
+CREATE INDEX idx_tareas_grupo ON tareas(grupo_id);
+CREATE INDEX idx_tareas_estado ON tareas(estado);
+CREATE INDEX idx_tareas_prioridad ON tareas(prioridad);
+CREATE INDEX idx_tareas_fecha_limite ON tareas(fecha_limite);
+CREATE INDEX idx_tareas_usuario_grupo ON tareas(usuario_id, grupo_id);
+
+-- =============================================
+-- INSERTAR DATOS DE PRUEBA
+-- =============================================
+
+-- Insertar usuarios
 INSERT INTO usuarios (nombre, email, password, rol) VALUES
-('Admin', 'admin@example.com', 'admin123', 'admin'),
-('Juan Pérez', 'juan@example.com', 'juan123', 'usuario'),
-('María García', 'maria@example.com', 'maria123', 'usuario');
+('Ana García', 'ana@empresa.com', '$2y$10$abc123def456ghi789jkl', 'admin'),
+('Carlos López', 'carlos@empresa.com', '$2y$10$abc123def456ghi789jkl', 'usuario'),
+('María Rodríguez', 'maria@empresa.com', '$2y$10$abc123def456ghi789jkl', 'usuario'),
+('Pedro Sánchez', 'pedro@empresa.com', '$2y$10$abc123def456ghi789jkl', 'usuario'),
+('Laura Martínez', 'laura@empresa.com', '$2y$10$abc123def456ghi789jkl', 'usuario');
 
--- 7. Insertar tareas de ejemplo
-INSERT INTO tareas (usuario_id, titulo, descripcion, fecha_limite, prioridad, estado) VALUES
-(1, 'Completar informe mensual', 'Preparar el reporte de ventas de marzo', '2026-05-15', 'alta', 'en_progreso'),
-(1, 'Revisar código del proyecto', 'Hacer code review de las nuevas features', '2026-05-10', 'media', 'pendiente'),
-(2, 'Comprar suministros', 'Papel, tinta y carpetas para la oficina', '2026-05-05', 'baja', 'completada'),
-(2, 'Actualizar documentación', 'Actualizar manual de usuario del sistema', '2026-05-20', 'media', 'pendiente'),
-(3, 'Preparar presentación', 'Crear slides para reunión con clientes', '2026-05-12', 'alta', 'pendiente');
+-- Insertar grupos
+INSERT INTO grupos (nombre, descripcion, admin_id) VALUES
+('Desarrollo Frontend', 'Equipo encargado de la interfaz de usuario y experiencia web', 1),
+('Desarrollo Backend', 'Equipo encargado de APIs, bases de datos y lógica del servidor', 1),
+('Diseño UI/UX', 'Equipo de diseño de interfaces y experiencia de usuario', 1),
+('Calidad QA', 'Equipo de pruebas y control de calidad', 1);
 
--- 8. Verificar que todo se creó correctamente
-SELECT 'Base de datos creada exitosamente' as Mensaje;
-SHOW TABLES;
+-- Asignar usuarios a grupos
+INSERT INTO grupo_usuarios (grupo_id, usuario_id) VALUES
+(1, 2), -- Carlos en Frontend
+(1, 3), -- María en Frontend
+(2, 2), -- Carlos en Backend
+(2, 4), -- Pedro en Backend
+(3, 3), -- María en Diseño
+(3, 5), -- Laura en Diseño
+(4, 4), -- Pedro en QA
+(4, 5); -- Laura en QA
+
+-- Insertar tareas
+INSERT INTO tareas (titulo, descripcion, usuario_id, grupo_id, asignado_por, fecha_limite, prioridad, estado, progreso) VALUES
+('Diseñar menú principal', 'Crear el menú de navegación responsive para escritorio y móvil', 2, 1, 1, '2024-12-20', 'alta', 'en_progreso', 75),
+('Implementar autenticación', 'Desarrollar sistema de login con JWT y recuperación de contraseña', 4, 2, 1, '2024-12-25', 'alta', 'pendiente', 0),
+('Diseñar logotipo', 'Crear logotipo corporativo y variantes para diferentes fondos', 5, 3, 1, '2024-12-15', 'media', 'completada', 100),
+('Pruebas de usuario', 'Realizar pruebas de usabilidad con 10 usuarios', 5, 4, 1, '2024-12-30', 'baja', 'pendiente', 0),
+('Optimizar carga', 'Mejorar tiempo de carga de la página principal', 3, 1, 1, '2024-12-18', 'alta', 'en_progreso', 50),
+('Documentar API', 'Crear documentación completa de la API con ejemplos', 2, 2, 1, '2024-12-28', 'media', 'pendiente', 20),
+('Crear paleta de colores', 'Definir paleta de colores corporativa y guía de estilos', 3, 3, 1, '2024-12-10', 'alta', 'completada', 100);
+
+-- =============================================
+-- CREAR VISTAS ÚTILES
+-- =============================================
+
+-- Vista 1: Resumen de tareas por usuario
+CREATE VIEW vista_resumen_usuario AS
+SELECT 
+    u.id AS usuario_id,
+    u.nombre AS usuario_nombre,
+    COUNT(t.id) AS total_tareas,
+    SUM(CASE WHEN t.estado = 'pendiente' THEN 1 ELSE 0 END) AS pendientes,
+    SUM(CASE WHEN t.estado = 'en_progreso' THEN 1 ELSE 0 END) AS en_progreso,
+    SUM(CASE WHEN t.estado = 'completada' THEN 1 ELSE 0 END) AS completadas,
+    ROUND(AVG(t.progreso), 1) AS progreso_promedio
+FROM usuarios u
+LEFT JOIN tareas t ON u.id = t.usuario_id
+WHERE u.activo = TRUE
+GROUP BY u.id, u.nombre;
+
+-- Vista 2: Tareas atrasadas
+CREATE VIEW vista_tareas_atrasadas AS
+SELECT 
+    t.id,
+    t.titulo,
+    u.nombre AS responsable,
+    g.nombre AS grupo,
+    t.fecha_limite,
+    DATEDIFF(CURDATE(), t.fecha_limite) AS dias_atraso,
+    t.prioridad
+FROM tareas t
+JOIN usuarios u ON t.usuario_id = u.id
+JOIN grupos g ON t.grupo_id = g.id
+WHERE t.estado NOT IN ('completada', 'cancelada')
+AND t.fecha_limite < CURDATE()
+ORDER BY dias_atraso DESC;
+
+-- Vista 3: Estadísticas por grupo
+CREATE VIEW vista_estadisticas_grupo AS
+SELECT 
+    g.id AS grupo_id,
+    g.nombre AS grupo_nombre,
+    COUNT(DISTINCT gu.usuario_id) AS total_miembros,
+    COUNT(t.id) AS total_tareas,
+    SUM(CASE WHEN t.estado = 'completada' THEN 1 ELSE 0 END) AS tareas_completadas,
+    ROUND(AVG(t.progreso), 1) AS progreso_promedio_grupo
+FROM grupos g
+LEFT JOIN grupo_usuarios gu ON g.id = gu.grupo_id AND gu.activo = TRUE
+LEFT JOIN tareas t ON g.id = t.grupo_id
+WHERE g.activo = TRUE
+GROUP BY g.id, g.nombre;
+
+-- =============================================
+-- CREAR PROCEDIMIENTOS ALMACENADOS
+-- =============================================
+
+-- Procedimiento: Asignar tarea
+DELIMITER $$
+CREATE PROCEDURE asignar_tarea(
+    IN p_titulo VARCHAR(150),
+    IN p_descripcion TEXT,
+    IN p_usuario_id INT,
+    IN p_grupo_id INT,
+    IN p_asignado_por INT,
+    IN p_fecha_limite DATE,
+    IN p_prioridad VARCHAR(10)
+)
+BEGIN
+    INSERT INTO tareas (titulo, descripcion, usuario_id, grupo_id, asignado_por, fecha_limite, prioridad)
+    VALUES (p_titulo, p_descripcion, p_usuario_id, p_grupo_id, p_asignado_por, p_fecha_limite, p_prioridad);
+    
+    SELECT LAST_INSERT_ID() AS tarea_id;
+END$$
+DELIMITER ;
+
+-- Procedimiento: Actualizar progreso de tarea
+DELIMITER $$
+CREATE PROCEDURE actualizar_progreso(
+    IN p_tarea_id INT,
+    IN p_progreso INT,
+    IN p_comentario VARCHAR(255)
+)
+BEGIN
+    UPDATE tareas 
+    SET progreso = p_progreso,
+        comentarios = CONCAT(IFNULL(comentarios, ''), '\n[', NOW(), '] ', p_comentario),
+        estado = CASE 
+            WHEN p_progreso = 0 THEN 'pendiente'
+            WHEN p_progreso = 100 THEN 'completada'
+            ELSE 'en_progreso'
+        END
+    WHERE id = p_tarea_id;
+END$$
+DELIMITER ;
+
+-- =============================================
+-- CONSULTAS DE EJEMPLO (comentadas)
+-- =============================================
+
+-- Ver todas las tareas de un usuario específico
+-- SELECT * FROM tareas WHERE usuario_id = 2;
+
+-- Ver todos los miembros de un grupo
+-- SELECT u.nombre FROM usuarios u
+-- JOIN grupo_usuarios gu ON u.id = gu.usuario_id
+-- WHERE gu.grupo_id = 1 AND gu.activo = TRUE;
+
+-- Ver tareas atrasadas
+-- SELECT * FROM vista_tareas_atrasadas;
+
+-- Ver resumen de un usuario
+-- SELECT * FROM vista_resumen_usuario WHERE usuario_nombre = 'Carlos López';
+
+-- Ver estadísticas de todos los grupos
+-- SELECT * FROM vista_estadisticas_grupo;
