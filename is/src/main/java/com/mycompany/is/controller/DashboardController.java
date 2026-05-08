@@ -39,7 +39,7 @@ public class DashboardController extends HttpServlet {
             request.setAttribute("tareas", tareaDao.listarRecientes(usuario.getId(), soloUsuario));
             request.getRequestDispatcher("/WEB-INF/views/dashboard.jsp").forward(request, response);
         } catch (Exception e) {
-            request.setAttribute("error", "No se pudo cargar el panel. Revisa la base de datos gestion_tareas.");
+            request.setAttribute("error", "No pudimos cargar el panel en este momento. Intentalo nuevamente.");
             request.getRequestDispatcher("/WEB-INF/views/dashboard.jsp").forward(request, response);
         }
     }

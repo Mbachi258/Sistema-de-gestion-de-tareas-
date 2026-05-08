@@ -16,13 +16,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Gestión de Tareas</title>
+    <title>Dashboard - TaskFlow Enterprise</title>
     <base href="<%= request.getContextPath() %>/">
-    <link rel="stylesheet" href="css/estilo.css?v=20260508-2">
+    <link rel="stylesheet" href="css/estilo.css?v=20260508-5">
 </head>
 <body class="dashboard-page">
     <header class="topbar dashboard-topbar">
-        <a class="brand" href="dashboard">Gestión de Tareas</a>
+        <a class="brand" href="dashboard">TaskFlow Enterprise</a>
         <nav class="nav-actions">
             <span><%= usuario != null ? usuario.getNombre() : "Usuario" %></span>
             <a href="logout">Salir</a>
@@ -31,9 +31,9 @@
 
     <main class="dashboard-layout">
         <section class="page-title">
-            <p class="eyebrow">MVC con JSP, Servlets y JDBC</p>
+            <p class="eyebrow">Panel ejecutivo</p>
             <h1>Resumen de actividad</h1>
-            <p>Estado actual tomado desde la base de datos gestion_tareas.</p>
+            <p>Vista general del trabajo activo, prioridades y equipos.</p>
         </section>
 
         <% if (request.getAttribute("error") != null) { %>
@@ -112,7 +112,7 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Título</th>
+                            <th>Titulo</th>
                             <th>Responsable</th>
                             <th>Grupo</th>
                             <th>Prioridad</th>

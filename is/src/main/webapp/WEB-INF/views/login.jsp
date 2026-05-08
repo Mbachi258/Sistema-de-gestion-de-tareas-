@@ -4,16 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ingresar - Gestión de Tareas</title>
+    <title>Ingresar - TaskFlow Enterprise</title>
     <base href="<%= request.getContextPath() %>/">
-    <link rel="stylesheet" href="css/estilo.css?v=20260508-2">
+    <link rel="stylesheet" href="css/estilo.css?v=20260508-5">
 </head>
 <body class="auth-page">
     <main class="auth-shell">
         <section class="auth-card">
-            <a class="brand auth-brand" href="./">Gestión de Tareas</a>
+            <a class="brand auth-brand" href="./">TaskFlow Enterprise</a>
             <h1>Ingresa a tu panel</h1>
-            <p>Usa tu email y contraseña para continuar.</p>
+            <p>Usa tu email y contrasena para continuar.</p>
 
             <% if (request.getAttribute("error") != null) { %>
                 <div class="alert alert-error"><%= request.getAttribute("error") %></div>
@@ -26,18 +26,18 @@
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" placeholder="usuario@empresa.com" required>
 
-                <label for="password">Contraseña</label>
+                <label for="password">Contrasena</label>
                 <div class="password-field">
-                    <input type="password" id="password" name="password" placeholder="Tu contraseña" required>
-                    <button type="button" class="icon-button" data-toggle-password aria-label="Mostrar contraseña">Ver</button>
+                    <input type="password" id="password" name="password" placeholder="Tu contrasena" required>
+                    <button type="button" class="icon-button" data-toggle-password aria-label="Mostrar contrasena">Ver</button>
                 </div>
 
                 <button class="button button-primary full-width" type="submit">Ingresar</button>
             </form>
 
-            <p class="form-footer">¿No tienes cuenta? <a href="registro">Regístrate</a></p>
+            <p class="form-footer">No tienes cuenta? <a href="registro">Solicita acceso</a></p>
         </section>
     </main>
-    <script src="js/script.js?v=20260508-2"></script>
+    <script src="js/script.js?v=20260508-5"></script>
 </body>
 </html>

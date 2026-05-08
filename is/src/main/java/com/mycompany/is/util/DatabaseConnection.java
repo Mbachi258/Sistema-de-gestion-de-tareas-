@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public class DatabaseConnection {
 
-    private static final String URL = "jdbc:mysql://localhost:3306/gestion_tareas"
+    private static final String URL = "jdbc:mysql://localhost:3308/gestion_tareas"
             + "?useSSL=false"
             + "&allowPublicKeyRetrieval=true"
             + "&serverTimezone=America/Lima"

@@ -4,16 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro - Gestión de Tareas</title>
+    <title>Registro - TaskFlow Enterprise</title>
     <base href="<%= request.getContextPath() %>/">
-    <link rel="stylesheet" href="css/estilo.css?v=20260508-2">
+    <link rel="stylesheet" href="css/estilo.css?v=20260508-5">
 </head>
 <body class="auth-page">
     <main class="auth-shell">
         <section class="auth-card">
-            <a class="brand auth-brand" href="./">Gestión de Tareas</a>
-            <h1>Crea tu cuenta</h1>
-            <p>El registro crea un usuario activo con rol de usuario.</p>
+            <a class="brand auth-brand" href="./">TaskFlow Enterprise</a>
+            <h1>Solicita tu acceso</h1>
+            <p>Ingresa tus datos para comenzar a organizar el trabajo de tu equipo.</p>
 
             <% if (request.getAttribute("error") != null) { %>
                 <div class="alert alert-error"><%= request.getAttribute("error") %></div>
@@ -26,18 +26,18 @@
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" placeholder="usuario@empresa.com" required>
 
-                <label for="password">Contraseña</label>
-                <input type="password" id="password" name="password" placeholder="Mínimo 6 caracteres" required>
+                <label for="password">Contrasena</label>
+                <input type="password" id="password" name="password" placeholder="Minimo 6 caracteres" required>
 
-                <label for="confirmarPassword">Confirmar contraseña</label>
-                <input type="password" id="confirmarPassword" name="confirmarPassword" placeholder="Repite la contraseña" required>
+                <label for="confirmarPassword">Confirmar contrasena</label>
+                <input type="password" id="confirmarPassword" name="confirmarPassword" placeholder="Repite la contrasena" required>
 
-                <button class="button button-primary full-width" type="submit">Crear cuenta</button>
+                <button class="button button-primary full-width" type="submit">Solicitar acceso</button>
             </form>
 
-            <p class="form-footer">¿Ya tienes cuenta? <a href="login">Ingresa</a></p>
+            <p class="form-footer">Ya tienes cuenta? <a href="login">Ingresa</a></p>
         </section>
     </main>
-    <script src="js/script.js?v=20260508-2"></script>
+    <script src="js/script.js?v=20260508-5"></script>
 </body>
 </html>

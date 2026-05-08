@@ -28,7 +28,7 @@ public class LoginController extends HttpServlet {
         String password = valor(request.getParameter("password"));
 
         if (email.isEmpty() || password.isEmpty()) {
-            request.setAttribute("error", "Email y contraseña son obligatorios.");
+            request.setAttribute("error", "Email y contrasena son obligatorios.");
             request.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(request, response);
             return;
         }
@@ -42,16 +42,17 @@ public class LoginController extends HttpServlet {
             }
 
             if (!usuario.isActivo()) {
-                request.setAttribute("error", "El usuario está inactivo. Contacta al administrador.");
+                request.setAttribute("error", "El usuario esta inactivo. Contacta al administrador.");
                 request.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(request, response);
                 return;
             }
 
+            usuario.setPassword(null);
             HttpSession session = request.getSession();
             session.setAttribute("usuario", usuario);
             response.sendRedirect(request.getContextPath() + "/dashboard");
         } catch (Exception e) {
-            request.setAttribute("error", "No se pudo iniciar sesión. Revisa la conexión con gestion_tareas.");
+            request.setAttribute("error", "No pudimos validar tus datos en este momento. Intentalo nuevamente.");
             request.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(request, response);
         }
     }

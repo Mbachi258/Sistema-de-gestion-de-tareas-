@@ -35,13 +35,13 @@ public class RegistroController extends HttpServlet {
         }
 
         if (!password.equals(confirmarPassword)) {
-            request.setAttribute("error", "Las contraseñas no coinciden.");
+            request.setAttribute("error", "Las contrasenas no coinciden.");
             request.getRequestDispatcher("/WEB-INF/views/registro.jsp").forward(request, response);
             return;
         }
 
         if (password.length() < 6) {
-            request.setAttribute("error", "La contraseña debe tener al menos 6 caracteres.");
+            request.setAttribute("error", "La contrasena debe tener al menos 6 caracteres.");
             request.getRequestDispatcher("/WEB-INF/views/registro.jsp").forward(request, response);
             return;
         }
@@ -55,10 +55,10 @@ public class RegistroController extends HttpServlet {
 
             Usuario usuario = new Usuario(nombre, email, PasswordUtil.hash(password), "usuario");
             usuarioDao.crear(usuario);
-            request.setAttribute("exito", "Cuenta creada correctamente. Ya puedes iniciar sesión.");
+            request.setAttribute("exito", "Cuenta creada correctamente. Ya puedes iniciar sesion.");
             request.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(request, response);
         } catch (Exception e) {
-            request.setAttribute("error", "No se pudo registrar el usuario. Revisa la conexión con gestion_tareas.");
+            request.setAttribute("error", "No pudimos completar el registro en este momento. Intentalo nuevamente.");
             request.getRequestDispatcher("/WEB-INF/views/registro.jsp").forward(request, response);
         }
     }
