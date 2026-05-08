@@ -4,13 +4,11 @@ import com.mycompany.is.dao.UsuarioDao;
 import com.mycompany.is.model.Usuario;
 import com.mycompany.is.util.PasswordUtil;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet("/registro")
 public class RegistroController extends HttpServlet {
 
     private final UsuarioDao usuarioDao = new UsuarioDao();

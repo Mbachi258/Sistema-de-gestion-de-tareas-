@@ -5,12 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro - Gestión de Tareas</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilo.css">
+    <base href="<%= request.getContextPath() %>/">
+    <link rel="stylesheet" href="css/estilo.css?v=20260508-2">
 </head>
 <body class="auth-page">
     <main class="auth-shell">
         <section class="auth-card">
-            <a class="brand auth-brand" href="${pageContext.request.contextPath}/">Gestión de Tareas</a>
+            <a class="brand auth-brand" href="./">Gestión de Tareas</a>
             <h1>Crea tu cuenta</h1>
             <p>El registro crea un usuario activo con rol de usuario.</p>
 
@@ -18,7 +19,7 @@
                 <div class="alert alert-error"><%= request.getAttribute("error") %></div>
             <% } %>
 
-            <form class="form-stack" action="${pageContext.request.contextPath}/registro" method="post">
+            <form class="form-stack" action="registro" method="post">
                 <label for="nombre">Nombre completo</label>
                 <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required>
 
@@ -34,9 +35,9 @@
                 <button class="button button-primary full-width" type="submit">Crear cuenta</button>
             </form>
 
-            <p class="form-footer">¿Ya tienes cuenta? <a href="${pageContext.request.contextPath}/login">Ingresa</a></p>
+            <p class="form-footer">¿Ya tienes cuenta? <a href="login">Ingresa</a></p>
         </section>
     </main>
-    <script src="${pageContext.request.contextPath}/js/script.js"></script>
+    <script src="js/script.js?v=20260508-2"></script>
 </body>
 </html>

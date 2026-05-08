@@ -6,13 +6,11 @@ import com.mycompany.is.dao.UsuarioDao;
 import com.mycompany.is.model.DashboardResumen;
 import com.mycompany.is.model.Usuario;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet("/dashboard")
 public class DashboardController extends HttpServlet {
 
     private final UsuarioDao usuarioDao = new UsuarioDao();

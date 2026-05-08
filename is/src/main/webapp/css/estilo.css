@@ -87,20 +87,18 @@ a {
 }
 
 .page-home {
-    background:
-        linear-gradient(115deg, rgba(37, 99, 235, 0.12), rgba(15, 159, 143, 0.1)),
-        var(--bg);
+    background: linear-gradient(180deg, #eef3f8 0%, #ffffff 58%, #f6f8fb 100%);
 }
 
 .hero {
     width: min(1180px, calc(100% - 32px));
-    min-height: calc(100vh - 90px);
+    min-height: calc(100vh - 170px);
     margin: 0 auto;
     display: grid;
     grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
     gap: 42px;
     align-items: center;
-    padding-bottom: 48px;
+    padding: 24px 0 42px;
 }
 
 .hero-copy h1 {
@@ -147,6 +145,19 @@ a {
     padding: 24px;
 }
 
+.enterprise-panel {
+    position: relative;
+    overflow: hidden;
+}
+
+.enterprise-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 6px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+}
+
 .preview-header {
     display: flex;
     align-items: center;
@@ -190,6 +201,10 @@ td small {
     margin-top: 12px;
 }
 
+.enterprise-metrics strong {
+    font-size: 1.65rem;
+}
+
 .task-preview {
     min-height: 74px;
     display: flex;
@@ -198,6 +213,45 @@ td small {
     border-top: 1px solid var(--line);
     padding: 16px 0 0;
     margin-top: 16px;
+}
+
+.enterprise-task strong {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.business-strip {
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto 44px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.business-strip article {
+    min-height: 170px;
+    padding: 20px;
+    border-top: 3px solid var(--primary);
+    background: var(--surface);
+    box-shadow: 0 10px 30px rgba(22, 32, 51, 0.08);
+}
+
+.business-strip span {
+    color: var(--accent);
+    font-weight: 900;
+    font-size: 0.8rem;
+}
+
+.business-strip strong {
+    display: block;
+    margin: 12px 0 8px;
+    font-size: 1.05rem;
+}
+
+.business-strip p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.55;
 }
 
 .priority {
@@ -458,7 +512,8 @@ th {
 @media (max-width: 860px) {
     .hero,
     .content-grid,
-    .stats-grid {
+    .stats-grid,
+    .business-strip {
         grid-template-columns: 1fr;
     }
 

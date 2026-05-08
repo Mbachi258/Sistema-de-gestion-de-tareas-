@@ -17,14 +17,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Gestión de Tareas</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilo.css">
+    <base href="<%= request.getContextPath() %>/">
+    <link rel="stylesheet" href="css/estilo.css?v=20260508-2">
 </head>
 <body class="dashboard-page">
     <header class="topbar dashboard-topbar">
-        <a class="brand" href="${pageContext.request.contextPath}/dashboard">Gestión de Tareas</a>
+        <a class="brand" href="dashboard">Gestión de Tareas</a>
         <nav class="nav-actions">
             <span><%= usuario != null ? usuario.getNombre() : "Usuario" %></span>
-            <a href="${pageContext.request.contextPath}/logout">Salir</a>
+            <a href="logout">Salir</a>
         </nav>
     </header>
 
