@@ -1,5 +1,6 @@
 package com.mycompany.is.dao;
 
+import com.mycompany.is.model.CompaneroProgreso;
 import com.mycompany.is.model.Tarea;
 import com.mycompany.is.util.DatabaseConnection;
 import java.sql.Connection;
@@ -146,6 +147,38 @@ public class TareaDao {
             }
         }
         return tareas;
+    }
+
+    public List<CompaneroProgreso> listarCompanerosPorUsuario(int usuarioId) throws SQLException {
+        String sql = "SELECT u.id, u.nombre, u.rol, COUNT(DISTINCT t.id) AS total_tareas, "
+                + "COALESCE(SUM(CASE WHEN t.estado = 'completada' THEN 1 ELSE 0 END), 0) AS tareas_completadas, "
+                + "COALESCE(ROUND(AVG(t.progreso), 1), 0) AS progreso_promedio "
+                + "FROM usuarios u "
+                + "JOIN grupo_usuarios gu ON u.id = gu.usuario_id AND gu.activo = TRUE "
+                + "JOIN grupo_usuarios scope ON gu.grupo_id = scope.grupo_id AND scope.activo = TRUE "
+                + "LEFT JOIN tareas t ON t.usuario_id = u.id AND t.grupo_id = gu.grupo_id "
+                + "WHERE scope.usuario_id = ? AND u.id <> ? AND u.activo = TRUE "
+                + "GROUP BY u.id, u.nombre, u.rol "
+                + "ORDER BY u.nombre";
+        List<CompaneroProgreso> companeros = new ArrayList<>();
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, usuarioId);
+            stmt.setInt(2, usuarioId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    CompaneroProgreso companero = new CompaneroProgreso();
+                    companero.setUsuarioId(rs.getInt("id"));
+                    companero.setNombre(rs.getString("nombre"));
+                    companero.setRol(rs.getString("rol"));
+                    companero.setTotalTareas(rs.getInt("total_tareas"));
+                    companero.setTareasCompletadas(rs.getInt("tareas_completadas"));
+                    companero.setProgresoPromedio(rs.getDouble("progreso_promedio"));
+                    companeros.add(companero);
+                }
+            }
+        }
+        return companeros;
     }
 
     public int crear(Tarea tarea) throws SQLException {

@@ -47,6 +47,7 @@ public class DashboardController extends HttpServlet {
             request.setAttribute("resumen", resumen);
             if (trabajador) {
                 request.setAttribute("grupos", grupoDao.listarEstadisticasPorUsuario(usuario.getId()));
+                request.setAttribute("companeros", tareaDao.listarCompanerosPorUsuario(usuario.getId()));
             } else {
                 request.setAttribute("grupos", grupoDao.listarEstadisticas(usuario.getId(), lider));
             }

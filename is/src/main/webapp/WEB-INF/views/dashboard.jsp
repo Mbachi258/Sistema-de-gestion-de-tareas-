@@ -1,5 +1,6 @@
 <%@page import="java.util.Map"%>
 <%@page import="java.util.List"%>
+<%@page import="com.mycompany.is.model.CompaneroProgreso"%>
 <%@page import="com.mycompany.is.model.Grupo"%>
 <%@page import="com.mycompany.is.model.Tarea"%>
 <%@page import="com.mycompany.is.model.Usuario"%>
@@ -11,6 +12,7 @@
     DashboardResumen resumen = (DashboardResumen) request.getAttribute("resumen");
     List<GrupoEstadistica> grupos = (List<GrupoEstadistica>) request.getAttribute("grupos");
     List<Tarea> tareas = (List<Tarea>) request.getAttribute("tareas");
+    List<CompaneroProgreso> companeros = (List<CompaneroProgreso>) request.getAttribute("companeros");
     List<Usuario> usuariosDisponibles = (List<Usuario>) request.getAttribute("usuariosDisponibles");
     List<Usuario> lideresDisponibles = (List<Usuario>) request.getAttribute("lideresDisponibles");
     List<Grupo> gruposDisponibles = (List<Grupo>) request.getAttribute("gruposDisponibles");
@@ -25,7 +27,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio - TaskFlow</title>
     <base href="<%= request.getContextPath() %>/">
-    <link rel="stylesheet" href="css/estilo.css?v=20260509-3">
+    <link rel="stylesheet" href="css/estilo.css?v=20260509-4">
 </head>
 <body class="dashboard-page">
     <header class="topbar dashboard-topbar">
@@ -41,7 +43,7 @@
         <section class="page-title page-title-hero">
             <p class="eyebrow"><%= esAdmin ? "Equipos y personas" : (esLider ? "Mi equipo" : "Mis tareas") %></p>
             <h1><%= esAdmin ? "Organiza quienes trabajan juntos" : (esLider ? "Reparte tareas y acompana avances" : "Tienes trabajo por avanzar") %></h1>
-            <p><%= esAdmin ? "Crea equipos, elige lideres y agrega trabajadores donde corresponde." : (esLider ? "Asigna tareas a tu equipo y revisa como van." : "Revisa tus pendientes, ajusta el avance y deja una nota cuando sea necesario.") %></p>
+            <p><%= esAdmin ? "Crea equipos, elige lideres y agrega trabajadores donde corresponde." : (esLider ? "Asigna tareas a tu equipo y revisa como van." : "Revisa tus pendientes, mira como avanza tu equipo y deja comentarios cuando sea necesario.") %></p>
         </section>
 
         <div id="ajaxMessage" class="ajax-message" hidden></div>
@@ -279,41 +281,85 @@
         <% } %>
 
         <% if (esTrabajador) { %>
-        <section class="worker-task-grid">
-            <% if (tareas != null && !tareas.isEmpty()) {
-                for (Tarea tarea : tareas) { %>
-            <article class="worker-task-card" data-task-card>
-                <div class="task-card-head">
+        <section class="worker-layout">
+            <aside class="panel teammates-panel">
+                <div class="panel-heading">
                     <div>
-                        <span class="tag"><%= tarea.getPrioridad() %></span>
-                        <h2><%= tarea.getTitulo() %></h2>
+                        <h2>Companeros</h2>
+                        <p>Avance general de las personas que trabajan contigo.</p>
                     </div>
-                    <strong data-progress-label><%= tarea.getProgreso() %>%</strong>
                 </div>
-                <p><%= tarea.getDescripcion() != null && !tarea.getDescripcion().isEmpty() ? tarea.getDescripcion() : "Sin descripcion" %></p>
-                <div class="task-meta">
-                    <span><%= tarea.getGrupoNombre() %></span>
-                    <span data-state-label><%= "en_progreso".equals(tarea.getEstado()) ? "En progreso" : ("pendiente".equals(tarea.getEstado()) ? "Pendiente" : ("completada".equals(tarea.getEstado()) ? "Completada" : "Cancelada")) %></span>
+                <div class="teammate-list">
+                    <% if (companeros != null && !companeros.isEmpty()) {
+                        for (CompaneroProgreso companero : companeros) {
+                            long avanceCompanero = Math.round(companero.getProgresoPromedio());
+                            String rolCompanero = "lider".equals(companero.getRol()) ? "Lider" : ("admin".equals(companero.getRol()) ? "Administrador" : "Trabajador");
+                    %>
+                    <article class="teammate-card">
+                        <div class="teammate-head">
+                            <div>
+                                <strong><%= companero.getNombre() %></strong>
+                                <span><%= rolCompanero %></span>
+                            </div>
+                            <b><%= avanceCompanero %>%</b>
+                        </div>
+                        <div class="progress teammate-progress"><span style="width:<%= avanceCompanero %>%"></span></div>
+                        <small><%= companero.getTareasCompletadas() %> completadas de <%= companero.getTotalTareas() %> tareas</small>
+                    </article>
+                    <%  }
+                    } else { %>
+                    <article class="teammate-card empty-state">
+                        <strong>Aun no hay companeros para mostrar</strong>
+                        <span>Cuando compartas equipo, veras aqui su avance general.</span>
+                    </article>
+                    <% } %>
                 </div>
-                <form class="ajax-progress-form" action="tareas" method="post">
-                    <input type="hidden" name="accion" value="actualizar">
-                    <input type="hidden" name="tareaId" value="<%= tarea.getId() %>">
-                    <label class="range-label">
-                        Avance
-                        <input type="range" name="progreso" min="0" max="100" value="<%= tarea.getProgreso() %>" data-progress-range>
-                    </label>
-                    <input type="text" name="comentario" placeholder="Cuenta que cambiaste">
-                    <button class="button button-primary" type="submit">Guardar avance</button>
-                    <small class="form-status" data-form-status></small>
-                </form>
-            </article>
-            <%  }
-            } else { %>
-            <article class="worker-task-card"><h2>No tienes tareas por ahora</h2></article>
-            <% } %>
+            </aside>
+
+            <section class="my-tasks-panel">
+                <div class="panel-heading worker-heading">
+                    <div>
+                        <h2>Mi panel de tareas</h2>
+                        <p>Actualiza tu avance y agrega comentarios para tu lider.</p>
+                    </div>
+                </div>
+                <div class="worker-task-grid">
+                    <% if (tareas != null && !tareas.isEmpty()) {
+                        for (Tarea tarea : tareas) { %>
+                    <article class="worker-task-card" data-task-card>
+                        <div class="task-card-head">
+                            <div>
+                                <span class="tag"><%= tarea.getPrioridad() %></span>
+                                <h2><%= tarea.getTitulo() %></h2>
+                            </div>
+                            <strong data-progress-label><%= tarea.getProgreso() %>%</strong>
+                        </div>
+                        <p><%= tarea.getDescripcion() != null && !tarea.getDescripcion().isEmpty() ? tarea.getDescripcion() : "Sin descripcion" %></p>
+                        <div class="task-meta">
+                            <span><%= tarea.getGrupoNombre() %></span>
+                            <span data-state-label><%= "en_progreso".equals(tarea.getEstado()) ? "En progreso" : ("pendiente".equals(tarea.getEstado()) ? "Pendiente" : ("completada".equals(tarea.getEstado()) ? "Completada" : "Cancelada")) %></span>
+                        </div>
+                        <form class="ajax-progress-form" action="tareas" method="post">
+                            <input type="hidden" name="accion" value="actualizar">
+                            <input type="hidden" name="tareaId" value="<%= tarea.getId() %>">
+                            <label class="range-label">
+                                Avance
+                                <input type="range" name="progreso" min="0" max="100" value="<%= tarea.getProgreso() %>" data-progress-range>
+                            </label>
+                            <input type="text" name="comentario" placeholder="Subir comentarios">
+                            <button class="button button-primary" type="submit">Guardar avance</button>
+                            <small class="form-status" data-form-status></small>
+                        </form>
+                    </article>
+                    <%  }
+                    } else { %>
+                    <article class="worker-task-card"><h2>No tienes tareas por ahora</h2></article>
+                    <% } %>
+                </div>
+            </section>
         </section>
         <% } %>
     </main>
-    <script src="js/script.js?v=20260509-3"></script>
+    <script src="js/script.js?v=20260509-4"></script>
 </body>
 </html>

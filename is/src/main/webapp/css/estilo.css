@@ -1,13 +1,13 @@
 :root {
-    --bg: #f6f8fb;
+    --bg: #f4f7fb;
     --surface: #ffffff;
-    --surface-soft: #eef3f8;
+    --surface-soft: #eef4f8;
     --text: #162033;
     --muted: #667085;
-    --line: #d8e0ea;
-    --primary: #2563eb;
-    --primary-dark: #1d4ed8;
-    --accent: #0f9f8f;
+    --line: #d7e1ea;
+    --primary: #1f5fbf;
+    --primary-dark: #17498f;
+    --accent: #118c78;
     --danger: #dc2626;
     --warning: #d97706;
     --success: #16a34a;
@@ -61,25 +61,33 @@ a {
     align-items: center;
     justify-content: center;
     border: 1px solid transparent;
-    border-radius: 8px;
+    border-radius: 7px;
     padding: 0 16px;
     font-weight: 700;
     cursor: pointer;
+    letter-spacing: 0;
+    box-shadow: 0 10px 18px rgba(22, 32, 51, 0.08);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 24px rgba(22, 32, 51, 0.12);
 }
 
 .button-primary {
     color: #ffffff;
-    background: var(--primary);
+    background: linear-gradient(135deg, var(--primary), var(--accent));
 }
 
 .button-primary:hover {
-    background: var(--primary-dark);
+    background: linear-gradient(135deg, var(--primary-dark), #0d7565);
 }
 
 .button-secondary {
     color: var(--text);
-    background: var(--surface);
-    border-color: var(--line);
+    background: linear-gradient(180deg, #ffffff, #f3f7fb);
+    border-color: #c4d1df;
 }
 
 .full-width {
@@ -404,17 +412,18 @@ select:focus {
 
 .dashboard-page {
     background:
-        radial-gradient(circle at 12% 12%, rgba(37, 99, 235, 0.16), transparent 28%),
-        radial-gradient(circle at 88% 8%, rgba(15, 159, 143, 0.15), transparent 26%),
-        linear-gradient(180deg, #eaf1fb 0, #f7f9fc 320px),
-        #f7f9fc;
+        linear-gradient(135deg, rgba(31, 95, 191, 0.16), transparent 34%),
+        radial-gradient(circle at 88% 12%, rgba(17, 140, 120, 0.18), transparent 30%),
+        linear-gradient(180deg, #e9f0f8 0, #f8fafc 46%, #eef4f8 100%);
 }
 
 .dashboard-topbar {
     width: 100%;
     padding: 18px 28px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.9);
+    border-bottom: 1px solid rgba(215, 225, 234, 0.88);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 26px rgba(22, 32, 51, 0.06);
 }
 
 .dashboard-layout {
@@ -443,7 +452,9 @@ select:focus {
     padding: 24px;
     border: 1px solid rgba(216, 224, 234, 0.7);
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.68);
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(243, 247, 251, 0.78)),
+        repeating-linear-gradient(135deg, rgba(31, 95, 191, 0.05) 0, rgba(31, 95, 191, 0.05) 1px, transparent 1px, transparent 18px);
     backdrop-filter: blur(12px);
 }
 
@@ -495,6 +506,26 @@ select:focus {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 18px;
     margin-bottom: 18px;
+}
+
+.my-tasks-panel .worker-task-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.worker-layout {
+    display: grid;
+    grid-template-columns: 0.82fr 1.38fr;
+    gap: 18px;
+    align-items: start;
+}
+
+.my-tasks-panel {
+    min-width: 0;
+}
+
+.worker-heading {
+    min-height: 62px;
+    padding: 0 2px;
 }
 
 .team-overview {
@@ -587,10 +618,24 @@ select:focus {
 }
 
 .worker-task-card {
+    position: relative;
+    overflow: hidden;
     padding: 20px;
+    border-top: 4px solid var(--primary);
+    background: linear-gradient(180deg, #ffffff 0, #f9fbfe 100%);
+}
+
+.worker-task-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 42px;
+    background: linear-gradient(90deg, rgba(31, 95, 191, 0.08), rgba(17, 140, 120, 0.08));
+    pointer-events: none;
 }
 
 .task-card-head {
+    position: relative;
     display: flex;
     justify-content: space-between;
     gap: 16px;
@@ -607,6 +652,7 @@ select:focus {
 }
 
 .task-meta {
+    position: relative;
     display: flex;
     justify-content: space-between;
     gap: 12px;
@@ -616,6 +662,7 @@ select:focus {
 }
 
 .ajax-progress-form {
+    position: relative;
     display: grid;
     gap: 12px;
     margin-top: 16px;
@@ -629,9 +676,81 @@ select:focus {
     font-size: 0.85rem;
 }
 
+.teammates-panel {
+    position: sticky;
+    top: 84px;
+    border-color: rgba(17, 140, 120, 0.28);
+    background:
+        linear-gradient(180deg, #ffffff, #f7fbfa);
+}
+
+.teammate-list {
+    display: grid;
+    gap: 12px;
+}
+
+.teammate-card {
+    display: grid;
+    gap: 8px;
+    padding: 14px;
+    border: 1px solid #d5e4e1;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 10px 22px rgba(22, 32, 51, 0.06);
+}
+
+.teammate-card.empty-state {
+    background: var(--surface-soft);
+}
+
+.teammate-card small,
+.teammate-card span {
+    color: var(--muted);
+}
+
+.teammate-card strong {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.teammate-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.teammate-head b {
+    color: var(--accent);
+    font-size: 1.35rem;
+}
+
+.teammate-progress {
+    width: 100%;
+}
+
 input[type="range"] {
     padding: 0;
+    background: transparent;
     accent-color: var(--primary);
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+    height: 9px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(31, 95, 191, 0.22), rgba(17, 140, 120, 0.22));
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    width: 20px;
+    height: 20px;
+    margin-top: -6px;
+    border: 3px solid #ffffff;
+    border-radius: 50%;
+    background: var(--primary);
+    box-shadow: 0 6px 14px rgba(31, 95, 191, 0.35);
 }
 
 .panel {
@@ -781,6 +900,7 @@ th {
     .content-grid,
     .admin-grid,
     .leader-grid,
+    .worker-layout,
     .org-grid,
     .worker-task-grid,
     .stats-grid,
@@ -808,6 +928,10 @@ th {
 
     .task-form .form-wide {
         grid-column: auto;
+    }
+
+    .teammates-panel {
+        position: static;
     }
 }
 
