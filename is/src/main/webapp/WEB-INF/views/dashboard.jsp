@@ -19,6 +19,22 @@
     boolean esAdmin = Boolean.TRUE.equals(request.getAttribute("esAdmin"));
     boolean esLider = Boolean.TRUE.equals(request.getAttribute("esLider"));
     boolean esTrabajador = Boolean.TRUE.equals(request.getAttribute("esTrabajador"));
+    int personasActivasSinAdmin = 0;
+    if (usuariosDisponibles != null) {
+        for (Usuario item : usuariosDisponibles) {
+            if (!"admin".equalsIgnoreCase(item.getRol())) {
+                personasActivasSinAdmin++;
+            }
+        }
+    }
+    int lideresActivos = 0;
+    if (lideresDisponibles != null) {
+        for (Usuario item : lideresDisponibles) {
+            if ("lider".equalsIgnoreCase(item.getRol())) {
+                lideresActivos++;
+            }
+        }
+    }
 %>
 <!DOCTYPE html>
 <html lang="es">
@@ -58,15 +74,15 @@
         <section class="stats-grid">
             <article class="stat-card">
                 <span><%= esAdmin ? "Personas activas" : (esLider ? "Trabajadores en mi equipo" : "Mis tareas") %></span>
-                <strong><%= esAdmin ? (resumen != null ? resumen.getTotalUsuarios() : 0) : (esLider ? (usuariosDisponibles != null ? usuariosDisponibles.size() : 0) : (tareas != null ? tareas.size() : 0)) %></strong>
+                <strong><%= esAdmin ? personasActivasSinAdmin : (esLider ? (usuariosDisponibles != null ? usuariosDisponibles.size() : 0) : (tareas != null ? tareas.size() : 0)) %></strong>
             </article>
             <article class="stat-card">
                 <span><%= esAdmin ? "Equipos creados" : "Tareas abiertas" %></span>
                 <strong><%= esAdmin ? (resumen != null ? resumen.getGruposActivos() : 0) : (resumen != null ? resumen.getTareasPendientes() : 0) %></strong>
             </article>
             <article class="stat-card">
-                <span><%= esAdmin ? "Posibles lideres" : "Mis equipos" %></span>
-                <strong><%= esAdmin ? (lideresDisponibles != null ? lideresDisponibles.size() : 0) : (gruposDisponibles != null ? gruposDisponibles.size() : 0) %></strong>
+                <span><%= esAdmin ? "Lideres activos" : "Mis equipos" %></span>
+                <strong><%= esAdmin ? lideresActivos : (gruposDisponibles != null ? gruposDisponibles.size() : 0) %></strong>
             </article>
         </section>
 
