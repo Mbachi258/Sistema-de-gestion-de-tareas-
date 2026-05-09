@@ -27,7 +27,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio - TaskFlow</title>
     <base href="<%= request.getContextPath() %>/">
-    <link rel="stylesheet" href="css/estilo.css?v=20260509-6">
+    <link rel="stylesheet" href="css/estilo.css?v=20260509-7">
 </head>
 <body class="dashboard-page">
     <header class="topbar dashboard-topbar">
@@ -57,7 +57,7 @@
 
         <section class="stats-grid">
             <article class="stat-card">
-                <span><%= esAdmin ? "Personas activas" : (esLider ? "Personas en mi equipo" : "Mis tareas") %></span>
+                <span><%= esAdmin ? "Personas activas" : (esLider ? "Trabajadores en mi equipo" : "Mis tareas") %></span>
                 <strong><%= esAdmin ? (resumen != null ? resumen.getTotalUsuarios() : 0) : (esLider ? (usuariosDisponibles != null ? usuariosDisponibles.size() : 0) : (tareas != null ? tareas.size() : 0)) %></strong>
             </article>
             <article class="stat-card">
@@ -167,11 +167,17 @@
                     <b><%= Math.round(promedio) %>%</b>
                 </div>
                 <div class="progress team-progress"><span style="width:<%= Math.round(promedio) %>%"></span></div>
-                <p><%= grupo.getDescripcion() != null && !grupo.getDescripcion().isEmpty() ? grupo.getDescripcion() : "Sin descripcion" %></p>
+                <p><%= grupo.getDescripcion() != null && !grupo.getDescripcion().isEmpty() ? grupo.getDescripcion() : "Equipo pendiente de descripcion operativa." %></p>
+                <div class="group-summary">
+                    <span><b><%= grupo.getLiderNombre() != null ? grupo.getLiderNombre() : "Sin lider" %></b>Lider</span>
+                    <span><b><%= totalMiembros %></b>Trabajadores</span>
+                    <span><b><%= totalTareas %></b>Tareas</span>
+                    <span><b><%= tareasCompletadas %></b>Completadas</span>
+                </div>
                 <button type="button" class="button button-secondary full-width" data-toggle-detail>Ver detalle</button>
                 <div class="team-detail" hidden>
-                    <div><span>Guia</span><strong><%= grupo.getLiderNombre() != null ? grupo.getLiderNombre() : "Sin lider" %></strong></div>
-                    <div><span>Miembros</span><strong><%= totalMiembros %></strong></div>
+                    <div><span>Lider</span><strong><%= grupo.getLiderNombre() != null ? grupo.getLiderNombre() : "Sin lider" %></strong></div>
+                    <div><span>Trabajadores</span><strong><%= totalMiembros %></strong></div>
                     <div><span>Tareas</span><strong><%= totalTareas %></strong></div>
                     <div><span>Completadas</span><strong><%= tareasCompletadas %></strong></div>
                 </div>
@@ -246,7 +252,7 @@
                 <h2>Mis equipos</h2>
                 <div class="table-wrap">
                     <table>
-                        <thead><tr><th>Equipo</th><th>Personas</th><th>Tareas</th><th>Avance</th></tr></thead>
+                        <thead><tr><th>Equipo</th><th>Trabajadores</th><th>Tareas</th><th>Avance</th></tr></thead>
                         <tbody>
                         <% if (grupos != null && !grupos.isEmpty()) {
                             for (GrupoEstadistica grupo : grupos) { %>
@@ -286,7 +292,7 @@
                 <div class="panel-heading">
                     <div>
                         <h2>Organizacion del equipo</h2>
-                        <p>Personas, equipos y avance general de tu area.</p>
+                        <p>Trabajadores, lider y avance general de tu area.</p>
                     </div>
                 </div>
                 <div class="team-organization">
@@ -301,7 +307,8 @@
                         </div>
                         <b><%= avanceEquipo %>%</b>
                         <div class="progress teammate-progress"><span style="width:<%= avanceEquipo %>%"></span></div>
-                        <small><%= grupo.getTotalMiembros() %> personas · <%= grupo.getTotalTareas() %> tareas</small>
+                        <small>Lider: <%= grupo.getLiderNombre() != null ? grupo.getLiderNombre() : "Sin lider" %></small>
+                        <small><%= grupo.getTotalMiembros() %> trabajadores - <%= grupo.getTotalTareas() %> tareas</small>
                     </article>
                     <%  }
                     } %>
@@ -377,6 +384,6 @@
         </section>
         <% } %>
     </main>
-    <script src="js/script.js?v=20260509-6"></script>
+    <script src="js/script.js?v=20260509-7"></script>
 </body>
 </html>

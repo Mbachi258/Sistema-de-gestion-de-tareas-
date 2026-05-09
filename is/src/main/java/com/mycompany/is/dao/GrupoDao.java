@@ -138,20 +138,21 @@ public class GrupoDao {
     }
 
     public List<GrupoEstadistica> listarEstadisticas(Integer liderId, boolean soloLider) throws SQLException {
-        String sql = "SELECT g.nombre, "
-                + "COUNT(DISTINCT gu.usuario_id) AS total_miembros, "
-                + "COUNT(t.id) AS total_tareas, "
-                + "SUM(CASE WHEN t.estado = 'completada' THEN 1 ELSE 0 END) AS tareas_completadas, "
+        String sql = "SELECT g.nombre, u.nombre AS lider_nombre, "
+                + "COUNT(DISTINCT CASE WHEN gu.usuario_id <> g.lider_id THEN gu.usuario_id END) AS total_miembros, "
+                + "COUNT(DISTINCT t.id) AS total_tareas, "
+                + "COUNT(DISTINCT CASE WHEN t.estado = 'completada' THEN t.id END) AS tareas_completadas, "
                 + "COALESCE(ROUND(AVG(t.progreso), 1), 0) AS progreso_promedio "
                 + "FROM grupos g "
                 + "LEFT JOIN grupo_usuarios gu ON g.id = gu.grupo_id AND gu.activo = TRUE "
                 + "LEFT JOIN tareas t ON g.id = t.grupo_id "
+                + "LEFT JOIN usuarios u ON g.lider_id = u.id "
                 + "WHERE g.activo = TRUE ";
         if (soloLider) {
             sql += "AND g.lider_id = ? ";
         }
         sql += ""
-                + "GROUP BY g.id, g.nombre "
+                + "GROUP BY g.id, g.nombre, u.nombre "
                 + "ORDER BY g.nombre";
         List<GrupoEstadistica> grupos = new ArrayList<>();
         try (Connection conn = DatabaseConnection.getConnection();
@@ -163,6 +164,7 @@ public class GrupoDao {
                 while (rs.next()) {
                     GrupoEstadistica grupo = new GrupoEstadistica();
                     grupo.setNombre(rs.getString("nombre"));
+                    grupo.setLiderNombre(rs.getString("lider_nombre"));
                     grupo.setTotalMiembros(rs.getInt("total_miembros"));
                     grupo.setTotalTareas(rs.getInt("total_tareas"));
                     grupo.setTareasCompletadas(rs.getInt("tareas_completadas"));
@@ -175,17 +177,18 @@ public class GrupoDao {
     }
 
     public List<GrupoEstadistica> listarEstadisticasPorUsuario(int usuarioId) throws SQLException {
-        String sql = "SELECT g.nombre, "
-                + "COUNT(DISTINCT gu.usuario_id) AS total_miembros, "
-                + "COUNT(t.id) AS total_tareas, "
-                + "SUM(CASE WHEN t.estado = 'completada' THEN 1 ELSE 0 END) AS tareas_completadas, "
+        String sql = "SELECT g.nombre, u.nombre AS lider_nombre, "
+                + "COUNT(DISTINCT CASE WHEN gu.usuario_id <> g.lider_id THEN gu.usuario_id END) AS total_miembros, "
+                + "COUNT(DISTINCT t.id) AS total_tareas, "
+                + "COUNT(DISTINCT CASE WHEN t.estado = 'completada' THEN t.id END) AS tareas_completadas, "
                 + "COALESCE(ROUND(AVG(t.progreso), 1), 0) AS progreso_promedio "
                 + "FROM grupos g "
                 + "JOIN grupo_usuarios scope ON g.id = scope.grupo_id AND scope.activo = TRUE "
                 + "LEFT JOIN grupo_usuarios gu ON g.id = gu.grupo_id AND gu.activo = TRUE "
                 + "LEFT JOIN tareas t ON g.id = t.grupo_id "
+                + "LEFT JOIN usuarios u ON g.lider_id = u.id "
                 + "WHERE g.activo = TRUE AND scope.usuario_id = ? "
-                + "GROUP BY g.id, g.nombre "
+                + "GROUP BY g.id, g.nombre, u.nombre "
                 + "ORDER BY g.nombre";
         List<GrupoEstadistica> grupos = new ArrayList<>();
         try (Connection conn = DatabaseConnection.getConnection();
@@ -195,6 +198,7 @@ public class GrupoDao {
                 while (rs.next()) {
                     GrupoEstadistica grupo = new GrupoEstadistica();
                     grupo.setNombre(rs.getString("nombre"));
+                    grupo.setLiderNombre(rs.getString("lider_nombre"));
                     grupo.setTotalMiembros(rs.getInt("total_miembros"));
                     grupo.setTotalTareas(rs.getInt("total_tareas"));
                     grupo.setTareasCompletadas(rs.getInt("tareas_completadas"));

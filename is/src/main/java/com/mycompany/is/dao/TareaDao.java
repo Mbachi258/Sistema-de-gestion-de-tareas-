@@ -151,11 +151,12 @@ public class TareaDao {
 
     public List<CompaneroProgreso> listarCompanerosPorUsuario(int usuarioId) throws SQLException {
         String sql = "SELECT u.id, u.nombre, u.rol, COUNT(DISTINCT t.id) AS total_tareas, "
-                + "COALESCE(SUM(CASE WHEN t.estado = 'completada' THEN 1 ELSE 0 END), 0) AS tareas_completadas, "
+                + "COUNT(DISTINCT CASE WHEN t.estado = 'completada' THEN t.id END) AS tareas_completadas, "
                 + "COALESCE(ROUND(AVG(t.progreso), 1), 0) AS progreso_promedio "
                 + "FROM usuarios u "
                 + "JOIN (SELECT gu.grupo_id, gu.usuario_id FROM grupo_usuarios gu WHERE gu.activo = TRUE "
                 + "UNION SELECT tx.grupo_id, tx.usuario_id FROM tareas tx) miembro ON u.id = miembro.usuario_id "
+                + "JOIN grupos gr ON gr.id = miembro.grupo_id AND gr.lider_id <> u.id "
                 + "JOIN (SELECT gu2.grupo_id FROM grupo_usuarios gu2 WHERE gu2.usuario_id = ? AND gu2.activo = TRUE "
                 + "UNION SELECT tu.grupo_id FROM tareas tu WHERE tu.usuario_id = ?) scope ON miembro.grupo_id = scope.grupo_id "
                 + "LEFT JOIN tareas t ON t.usuario_id = u.id AND t.grupo_id = miembro.grupo_id "

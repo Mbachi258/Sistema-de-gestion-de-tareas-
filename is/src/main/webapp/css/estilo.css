@@ -581,6 +581,30 @@ select:focus {
     line-height: 1.5;
 }
 
+.group-summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin: 14px 0;
+}
+
+.group-summary span {
+    min-height: 58px;
+    padding: 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface-soft);
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.group-summary b {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--text);
+    font-size: 1rem;
+}
+
 .team-progress {
     width: 100%;
     margin: 14px 0 12px;

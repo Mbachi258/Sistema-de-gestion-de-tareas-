@@ -84,6 +84,7 @@ public class UsuarioDao {
                 + "JOIN grupo_usuarios gu ON u.id = gu.usuario_id AND gu.activo = TRUE "
                 + "JOIN grupos g ON gu.grupo_id = g.id "
                 + "WHERE u.activo = TRUE AND g.lider_id = ? "
+                + "AND u.id <> g.lider_id "
                 + "ORDER BY u.nombre";
         List<Usuario> usuarios = new ArrayList<>();
         try (Connection conn = DatabaseConnection.getConnection();

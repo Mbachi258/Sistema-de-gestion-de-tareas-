@@ -3,6 +3,7 @@ package com.mycompany.is.model;
 public class GrupoEstadistica {
 
     private String nombre;
+    private String liderNombre;
     private int totalMiembros;
     private int totalTareas;
     private int tareasCompletadas;
@@ -14,6 +15,14 @@ public class GrupoEstadistica {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public String getLiderNombre() {
+        return liderNombre;
+    }
+
+    public void setLiderNombre(String liderNombre) {
+        this.liderNombre = liderNombre;
     }
 
     public int getTotalMiembros() {
