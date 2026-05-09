@@ -505,11 +505,12 @@ select:focus {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 18px;
+    align-items: start;
     margin-bottom: 18px;
 }
 
 .my-tasks-panel .worker-task-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
 }
 
 .worker-layout {
@@ -636,8 +637,8 @@ select:focus {
 
 .task-card-head {
     position: relative;
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
     gap: 16px;
     align-items: flex-start;
 }
@@ -645,10 +646,20 @@ select:focus {
 .task-card-head h2 {
     margin: 12px 0 0;
     font-size: 1.1rem;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
 }
 
 .task-card-head strong {
+    min-width: 58px;
+    text-align: right;
     font-size: 1.7rem;
+}
+
+.worker-task-card > p {
+    position: relative;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
 }
 
 .task-meta {
@@ -659,6 +670,11 @@ select:focus {
     padding: 12px 0;
     border-top: 1px solid var(--line);
     border-bottom: 1px solid var(--line);
+}
+
+.task-meta span {
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 .ajax-progress-form {
@@ -687,6 +703,41 @@ select:focus {
 .teammate-list {
     display: grid;
     gap: 12px;
+}
+
+.team-organization {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.team-mini-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px 12px;
+    padding: 14px;
+    border: 1px solid rgba(31, 95, 191, 0.18);
+    border-radius: 8px;
+    background: linear-gradient(180deg, #ffffff, #f3f8fc);
+}
+
+.team-mini-card span,
+.team-mini-card small {
+    color: var(--muted);
+}
+
+.team-mini-card strong {
+    display: block;
+    margin-top: 5px;
+}
+
+.team-mini-card b {
+    color: var(--primary);
+    font-size: 1.35rem;
+}
+
+.team-mini-card .progress {
+    grid-column: 1 / -1;
 }
 
 .teammate-card {

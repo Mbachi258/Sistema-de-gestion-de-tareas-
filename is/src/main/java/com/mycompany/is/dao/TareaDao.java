@@ -154,10 +154,12 @@ public class TareaDao {
                 + "COALESCE(SUM(CASE WHEN t.estado = 'completada' THEN 1 ELSE 0 END), 0) AS tareas_completadas, "
                 + "COALESCE(ROUND(AVG(t.progreso), 1), 0) AS progreso_promedio "
                 + "FROM usuarios u "
-                + "JOIN grupo_usuarios gu ON u.id = gu.usuario_id AND gu.activo = TRUE "
-                + "JOIN grupo_usuarios scope ON gu.grupo_id = scope.grupo_id AND scope.activo = TRUE "
-                + "LEFT JOIN tareas t ON t.usuario_id = u.id AND t.grupo_id = gu.grupo_id "
-                + "WHERE scope.usuario_id = ? AND u.id <> ? AND u.activo = TRUE "
+                + "JOIN (SELECT gu.grupo_id, gu.usuario_id FROM grupo_usuarios gu WHERE gu.activo = TRUE "
+                + "UNION SELECT tx.grupo_id, tx.usuario_id FROM tareas tx) miembro ON u.id = miembro.usuario_id "
+                + "JOIN (SELECT gu2.grupo_id FROM grupo_usuarios gu2 WHERE gu2.usuario_id = ? AND gu2.activo = TRUE "
+                + "UNION SELECT tu.grupo_id FROM tareas tu WHERE tu.usuario_id = ?) scope ON miembro.grupo_id = scope.grupo_id "
+                + "LEFT JOIN tareas t ON t.usuario_id = u.id AND t.grupo_id = miembro.grupo_id "
+                + "WHERE u.id <> ? AND u.activo = TRUE "
                 + "GROUP BY u.id, u.nombre, u.rol "
                 + "ORDER BY u.nombre";
         List<CompaneroProgreso> companeros = new ArrayList<>();
@@ -165,6 +167,7 @@ public class TareaDao {
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, usuarioId);
             stmt.setInt(2, usuarioId);
+            stmt.setInt(3, usuarioId);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     CompaneroProgreso companero = new CompaneroProgreso();

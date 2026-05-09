@@ -22,6 +22,16 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             const hidden = detail.hasAttribute("hidden");
             if (hidden) {
+                document.querySelectorAll(".team-detail").forEach(function (item) {
+                    if (item !== detail) {
+                        item.setAttribute("hidden", "");
+                    }
+                });
+                document.querySelectorAll("[data-toggle-detail]").forEach(function (item) {
+                    if (item !== button) {
+                        item.textContent = "Ver detalle";
+                    }
+                });
                 detail.removeAttribute("hidden");
                 button.textContent = "Ocultar detalle";
             } else {

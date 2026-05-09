@@ -27,7 +27,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio - TaskFlow</title>
     <base href="<%= request.getContextPath() %>/">
-    <link rel="stylesheet" href="css/estilo.css?v=20260509-4">
+    <link rel="stylesheet" href="css/estilo.css?v=20260509-6">
 </head>
 <body class="dashboard-page">
     <header class="topbar dashboard-topbar">
@@ -285,9 +285,26 @@
             <aside class="panel teammates-panel">
                 <div class="panel-heading">
                     <div>
-                        <h2>Companeros</h2>
-                        <p>Avance general de las personas que trabajan contigo.</p>
+                        <h2>Organizacion del equipo</h2>
+                        <p>Personas, equipos y avance general de tu area.</p>
                     </div>
+                </div>
+                <div class="team-organization">
+                    <% if (grupos != null && !grupos.isEmpty()) {
+                        for (GrupoEstadistica grupo : grupos) {
+                            long avanceEquipo = Math.round(grupo.getProgresoPromedio());
+                    %>
+                    <article class="team-mini-card">
+                        <div>
+                            <span>Equipo</span>
+                            <strong><%= grupo.getNombre() %></strong>
+                        </div>
+                        <b><%= avanceEquipo %>%</b>
+                        <div class="progress teammate-progress"><span style="width:<%= avanceEquipo %>%"></span></div>
+                        <small><%= grupo.getTotalMiembros() %> personas · <%= grupo.getTotalTareas() %> tareas</small>
+                    </article>
+                    <%  }
+                    } %>
                 </div>
                 <div class="teammate-list">
                     <% if (companeros != null && !companeros.isEmpty()) {
@@ -309,8 +326,8 @@
                     <%  }
                     } else { %>
                     <article class="teammate-card empty-state">
-                        <strong>Aun no hay companeros para mostrar</strong>
-                        <span>Cuando compartas equipo, veras aqui su avance general.</span>
+                        <strong>Aun no hay personas para mostrar</strong>
+                        <span>Cuando tu equipo tenga mas integrantes, veras aqui su avance.</span>
                     </article>
                     <% } %>
                 </div>
@@ -360,6 +377,6 @@
         </section>
         <% } %>
     </main>
-    <script src="js/script.js?v=20260509-4"></script>
+    <script src="js/script.js?v=20260509-6"></script>
 </body>
 </html>
