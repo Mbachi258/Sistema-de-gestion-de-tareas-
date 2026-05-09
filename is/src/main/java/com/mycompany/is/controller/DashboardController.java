@@ -28,19 +28,42 @@ public class DashboardController extends HttpServlet {
 
         try {
             boolean admin = "admin".equalsIgnoreCase(usuario.getRol());
-            boolean soloUsuario = !admin;
+            boolean lider = "lider".equalsIgnoreCase(usuario.getRol());
+            boolean trabajador = "usuario".equalsIgnoreCase(usuario.getRol());
             DashboardResumen resumen = new DashboardResumen();
             resumen.setTotalUsuarios(usuarioDao.contarActivos());
-            resumen.setTareasPendientes(tareaDao.contarPendientes(usuario.getId(), soloUsuario));
+            if (lider) {
+                resumen.setTareasPendientes(tareaDao.contarPendientesPorLider(usuario.getId()));
+                resumen.getTareasPorPrioridad().putAll(tareaDao.contarPorPrioridadLider(usuario.getId()));
+            } else {
+                resumen.setTareasPendientes(tareaDao.contarPendientes(usuario.getId(), trabajador));
+                resumen.getTareasPorPrioridad().putAll(tareaDao.contarPorPrioridad(usuario.getId(), trabajador));
+            }
             resumen.setGruposActivos(grupoDao.contarActivos());
-            resumen.getTareasPorPrioridad().putAll(tareaDao.contarPorPrioridad(usuario.getId(), soloUsuario));
 
             request.setAttribute("esAdmin", admin);
+            request.setAttribute("esLider", lider);
+            request.setAttribute("esTrabajador", trabajador);
             request.setAttribute("resumen", resumen);
-            request.setAttribute("grupos", grupoDao.listarEstadisticas());
-            request.setAttribute("usuariosDisponibles", usuarioDao.listarActivos());
-            request.setAttribute("gruposDisponibles", grupoDao.listarActivos());
-            request.setAttribute("tareas", tareaDao.listarRecientes(usuario.getId(), soloUsuario));
+            if (trabajador) {
+                request.setAttribute("grupos", grupoDao.listarEstadisticasPorUsuario(usuario.getId()));
+            } else {
+                request.setAttribute("grupos", grupoDao.listarEstadisticas(usuario.getId(), lider));
+            }
+            request.setAttribute("usuariosDisponibles", admin ? usuarioDao.listarActivos() : usuarioDao.listarMiembrosDeLider(usuario.getId()));
+            request.setAttribute("lideresDisponibles", usuarioDao.listarLideres());
+            if (admin) {
+                request.setAttribute("gruposDisponibles", grupoDao.listarActivos());
+            } else if (lider) {
+                request.setAttribute("gruposDisponibles", grupoDao.listarPorLider(usuario.getId()));
+            } else {
+                request.setAttribute("gruposDisponibles", grupoDao.listarPorUsuario(usuario.getId()));
+            }
+            if (lider) {
+                request.setAttribute("tareas", tareaDao.listarPorLider(usuario.getId()));
+            } else {
+                request.setAttribute("tareas", tareaDao.listarRecientes(usuario.getId(), trabajador));
+            }
             moverFlash(request);
             request.getRequestDispatcher("/WEB-INF/views/dashboard.jsp").forward(request, response);
         } catch (Exception e) {

@@ -22,11 +22,13 @@ Credenciales configuradas por defecto:
 Usuarios de prueba:
 
 - `admin@empresa.com` / `admin123`
-- `carlos@empresa.com` / `usuario123`
+- `carlos@empresa.com` / `lider123`
+- `pedro@empresa.com` / `usuario123`
 
 ## Roles
 
-- Administrador: ve la operacion completa, asigna tareas y puede actualizar avances.
+- Administrador: crea grupos, asigna lideres y agrega trabajadores a grupos.
+- Lider: ve solo sus grupos y delega tareas a miembros de esos grupos.
 - Usuario: ve sus tareas asignadas y actualiza progreso/comentarios.
 
 ## Ejecucion

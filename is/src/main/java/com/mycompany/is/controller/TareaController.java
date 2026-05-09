@@ -1,6 +1,7 @@
 package com.mycompany.is.controller;
 
 import com.mycompany.is.dao.TareaDao;
+import com.mycompany.is.dao.GrupoDao;
 import com.mycompany.is.model.Tarea;
 import com.mycompany.is.model.Usuario;
 import jakarta.servlet.ServletException;
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 public class TareaController extends HttpServlet {
 
     private final TareaDao tareaDao = new TareaDao();
+    private final GrupoDao grupoDao = new GrupoDao();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -39,8 +41,9 @@ public class TareaController extends HttpServlet {
     }
 
     private void asignarTarea(HttpServletRequest request, Usuario usuario) throws Exception {
-        if (!"admin".equalsIgnoreCase(usuario.getRol())) {
-            request.getSession().setAttribute("flashError", "No tienes permisos para asignar tareas.");
+        boolean lider = "lider".equalsIgnoreCase(usuario.getRol());
+        if (!lider) {
+            request.getSession().setAttribute("flashError", "Solo los lideres pueden delegar tareas.");
             return;
         }
 
@@ -51,6 +54,14 @@ public class TareaController extends HttpServlet {
 
         if (titulo.isEmpty() || responsableId <= 0 || grupoId <= 0 || prioridad.isEmpty()) {
             request.getSession().setAttribute("flashError", "Completa los datos principales de la tarea.");
+            return;
+        }
+        if (!grupoDao.esLiderDeGrupo(usuario.getId(), grupoId)) {
+            request.getSession().setAttribute("flashError", "No puedes asignar tareas fuera de tu grupo.");
+            return;
+        }
+        if (!grupoDao.usuarioPerteneceGrupo(responsableId, grupoId)) {
+            request.getSession().setAttribute("flashError", "El responsable debe pertenecer al grupo seleccionado.");
             return;
         }
 
@@ -72,9 +83,9 @@ public class TareaController extends HttpServlet {
     private void actualizarTarea(HttpServletRequest request, Usuario usuario) throws Exception {
         int tareaId = entero(request.getParameter("tareaId"));
         int progreso = Math.max(0, Math.min(100, entero(request.getParameter("progreso"))));
-        boolean admin = "admin".equalsIgnoreCase(usuario.getRol());
+        boolean trabajador = "usuario".equalsIgnoreCase(usuario.getRol());
 
-        if (tareaId <= 0) {
+        if (tareaId <= 0 || !trabajador) {
             request.getSession().setAttribute("flashError", "Selecciona una tarea valida.");
             return;
         }
@@ -82,7 +93,7 @@ public class TareaController extends HttpServlet {
         boolean actualizado = tareaDao.actualizarProgreso(
                 tareaId,
                 usuario.getId(),
-                admin,
+                false,
                 progreso,
                 valor(request.getParameter("comentario"))
         );

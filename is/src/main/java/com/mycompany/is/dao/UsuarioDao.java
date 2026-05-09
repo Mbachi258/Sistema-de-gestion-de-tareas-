@@ -69,6 +69,48 @@ public class UsuarioDao {
     public List<Usuario> listarActivos() throws SQLException {
         String sql = "SELECT id, nombre, email, password, rol, fecha_registro, activo "
                 + "FROM usuarios WHERE activo = TRUE ORDER BY nombre";
+        return listarPorSql(sql);
+    }
+
+    public List<Usuario> listarLideres() throws SQLException {
+        String sql = "SELECT id, nombre, email, password, rol, fecha_registro, activo "
+                + "FROM usuarios WHERE activo = TRUE AND rol IN ('admin', 'lider') ORDER BY nombre";
+        return listarPorSql(sql);
+    }
+
+    public List<Usuario> listarMiembrosDeLider(int liderId) throws SQLException {
+        String sql = "SELECT DISTINCT u.id, u.nombre, u.email, u.password, u.rol, u.fecha_registro, u.activo "
+                + "FROM usuarios u "
+                + "JOIN grupo_usuarios gu ON u.id = gu.usuario_id AND gu.activo = TRUE "
+                + "JOIN grupos g ON gu.grupo_id = g.id "
+                + "WHERE u.activo = TRUE AND g.lider_id = ? "
+                + "ORDER BY u.nombre";
+        List<Usuario> usuarios = new ArrayList<>();
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, liderId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Usuario usuario = mapearUsuario(rs);
+                    usuario.setPassword(null);
+                    usuarios.add(usuario);
+                }
+            }
+        }
+        return usuarios;
+    }
+
+    public void actualizarRol(int usuarioId, String rol) throws SQLException {
+        String sql = "UPDATE usuarios SET rol = ? WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, rol);
+            stmt.setInt(2, usuarioId);
+            stmt.executeUpdate();
+        }
+    }
+
+    private List<Usuario> listarPorSql(String sql) throws SQLException {
         List<Usuario> usuarios = new ArrayList<>();
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql);

@@ -68,6 +68,15 @@
         <url-pattern>/tareas</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>GrupoController</servlet-name>
+        <servlet-class>com.mycompany.is.controller.GrupoController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GrupoController</servlet-name>
+        <url-pattern>/grupos</url-pattern>
+    </servlet-mapping>
+
     <session-config>
         <session-timeout>
             30

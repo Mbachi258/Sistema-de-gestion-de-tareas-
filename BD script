@@ -16,7 +16,7 @@ CREATE TABLE usuarios (
     nombre VARCHAR(50) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    rol ENUM('admin', 'usuario') DEFAULT 'usuario',
+    rol ENUM('admin', 'lider', 'usuario') DEFAULT 'usuario',
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     activo BOOLEAN DEFAULT TRUE
 );
@@ -26,10 +26,13 @@ CREATE TABLE grupos (
     nombre VARCHAR(100) NOT NULL,
     descripcion TEXT,
     admin_id INT NOT NULL,
+    lider_id INT NOT NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     activo BOOLEAN DEFAULT TRUE,
     CONSTRAINT fk_grupos_admin
-        FOREIGN KEY (admin_id) REFERENCES usuarios(id) ON DELETE CASCADE
+        FOREIGN KEY (admin_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    CONSTRAINT fk_grupos_lider
+        FOREIGN KEY (lider_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
 CREATE TABLE grupo_usuarios (
@@ -82,16 +85,16 @@ CREATE INDEX idx_tareas_usuario_grupo ON tareas(usuario_id, grupo_id);
 
 INSERT INTO usuarios (nombre, email, password, rol) VALUES
 ('Ana Garcia', 'admin@empresa.com', SHA2('admin123', 256), 'admin'),
-('Carlos Lopez', 'carlos@empresa.com', SHA2('usuario123', 256), 'usuario'),
-('Maria Rodriguez', 'maria@empresa.com', SHA2('usuario123', 256), 'usuario'),
+('Carlos Lopez', 'carlos@empresa.com', SHA2('lider123', 256), 'lider'),
+('Maria Rodriguez', 'maria@empresa.com', SHA2('lider123', 256), 'lider'),
 ('Pedro Sanchez', 'pedro@empresa.com', SHA2('usuario123', 256), 'usuario'),
 ('Laura Martinez', 'laura@empresa.com', SHA2('usuario123', 256), 'usuario');
 
-INSERT INTO grupos (nombre, descripcion, admin_id) VALUES
-('Desarrollo Frontend', 'Equipo encargado de la interfaz de usuario y experiencia web', 1),
-('Desarrollo Backend', 'Equipo encargado de APIs, base de datos y logica del servidor', 1),
-('Diseno UI/UX', 'Equipo de diseno de interfaces y experiencia de usuario', 1),
-('Calidad QA', 'Equipo de pruebas y control de calidad', 1);
+INSERT INTO grupos (nombre, descripcion, admin_id, lider_id) VALUES
+('Desarrollo Frontend', 'Equipo encargado de la interfaz de usuario y experiencia web', 1, 2),
+('Desarrollo Backend', 'Equipo encargado de APIs, base de datos y logica del servidor', 1, 2),
+('Diseno UI/UX', 'Equipo de diseno de interfaces y experiencia de usuario', 1, 3),
+('Calidad QA', 'Equipo de pruebas y control de calidad', 1, 3);
 
 INSERT INTO grupo_usuarios (grupo_id, usuario_id) VALUES
 (1, 2),

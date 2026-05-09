@@ -37,6 +37,19 @@ public class TareaDao {
         }
     }
 
+    public int contarPendientesPorLider(int liderId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM tareas t "
+                + "JOIN grupos g ON t.grupo_id = g.id "
+                + "WHERE t.estado IN ('pendiente', 'en_progreso') AND g.lider_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, liderId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next() ? rs.getInt(1) : 0;
+            }
+        }
+    }
+
     public Map<String, Integer> contarPorPrioridad() throws SQLException {
         return contarPorPrioridad(null, false);
     }
@@ -65,6 +78,26 @@ public class TareaDao {
         return conteo;
     }
 
+    public Map<String, Integer> contarPorPrioridadLider(int liderId) throws SQLException {
+        Map<String, Integer> conteo = new LinkedHashMap<>();
+        conteo.put("alta", 0);
+        conteo.put("media", 0);
+        conteo.put("baja", 0);
+        String sql = "SELECT t.prioridad, COUNT(*) AS total FROM tareas t "
+                + "JOIN grupos g ON t.grupo_id = g.id "
+                + "WHERE g.lider_id = ? GROUP BY t.prioridad";
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, liderId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    conteo.put(rs.getString("prioridad"), rs.getInt("total"));
+                }
+            }
+        }
+        return conteo;
+    }
+
     public List<Tarea> listarRecientes(Integer usuarioId, boolean soloUsuario) throws SQLException {
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT t.id, t.titulo, t.descripcion, t.usuario_id, t.grupo_id, t.asignado_por, ");
@@ -84,6 +117,28 @@ public class TareaDao {
             if (soloUsuario) {
                 stmt.setInt(1, usuarioId);
             }
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    tareas.add(mapearTarea(rs));
+                }
+            }
+        }
+        return tareas;
+    }
+
+    public List<Tarea> listarPorLider(int liderId) throws SQLException {
+        String sql = "SELECT t.id, t.titulo, t.descripcion, t.usuario_id, t.grupo_id, t.asignado_por, "
+                + "t.fecha_limite, t.prioridad, t.estado, t.progreso, t.comentarios, "
+                + "t.fecha_creacion, t.fecha_actualizacion, u.nombre AS responsable, g.nombre AS grupo "
+                + "FROM tareas t "
+                + "JOIN usuarios u ON t.usuario_id = u.id "
+                + "JOIN grupos g ON t.grupo_id = g.id "
+                + "WHERE g.lider_id = ? "
+                + "ORDER BY t.fecha_actualizacion DESC LIMIT 12";
+        List<Tarea> tareas = new ArrayList<>();
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, liderId);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     tareas.add(mapearTarea(rs));

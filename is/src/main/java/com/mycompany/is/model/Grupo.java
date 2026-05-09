@@ -8,6 +8,8 @@ public class Grupo {
     private String nombre;
     private String descripcion;
     private int adminId;
+    private int liderId;
+    private String liderNombre;
     private LocalDateTime fechaCreacion;
     private boolean activo;
 
@@ -41,6 +43,22 @@ public class Grupo {
 
     public void setAdminId(int adminId) {
         this.adminId = adminId;
+    }
+
+    public int getLiderId() {
+        return liderId;
+    }
+
+    public void setLiderId(int liderId) {
+        this.liderId = liderId;
+    }
+
+    public String getLiderNombre() {
+        return liderNombre;
+    }
+
+    public void setLiderNombre(String liderNombre) {
+        this.liderNombre = liderNombre;
     }
 
     public LocalDateTime getFechaCreacion() {
