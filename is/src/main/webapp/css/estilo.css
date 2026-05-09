@@ -338,7 +338,23 @@ input {
     font: inherit;
 }
 
+select {
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0 12px;
+    color: var(--text);
+    background: #ffffff;
+    font: inherit;
+}
+
 input:focus {
+    border-color: var(--primary);
+    outline: 3px solid rgba(37, 99, 235, 0.14);
+}
+
+select:focus {
     border-color: var(--primary);
     outline: 3px solid rgba(37, 99, 235, 0.14);
 }
@@ -403,6 +419,17 @@ input:focus {
     padding: 32px 0;
 }
 
+.role-pill {
+    min-height: 30px;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 8px;
+    padding: 0 10px;
+    color: var(--primary-dark);
+    background: rgba(37, 99, 235, 0.1);
+    font-weight: 800;
+}
+
 .page-title {
     margin-bottom: 22px;
 }
@@ -443,6 +470,46 @@ input:focus {
     margin-bottom: 16px;
 }
 
+.panel-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.panel-heading h2 {
+    margin-bottom: 6px;
+}
+
+.panel-heading p {
+    margin: 0;
+    color: var(--muted);
+}
+
+.action-panel {
+    margin-bottom: 18px;
+}
+
+.task-form {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(120px, 1fr));
+    gap: 12px;
+    align-items: end;
+}
+
+.task-form label {
+    display: grid;
+    gap: 7px;
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-weight: 800;
+}
+
+.task-form .form-wide {
+    grid-column: span 2;
+}
+
 .priority-list {
     display: grid;
     gap: 12px;
@@ -468,6 +535,10 @@ table {
     width: 100%;
     min-width: 640px;
     border-collapse: collapse;
+}
+
+.tasks-table {
+    min-width: 980px;
 }
 
 th,
@@ -509,6 +580,21 @@ th {
     background: var(--accent);
 }
 
+.inline-update {
+    display: grid;
+    grid-template-columns: 76px minmax(140px, 1fr) auto;
+    gap: 8px;
+    align-items: center;
+}
+
+.inline-update input {
+    min-height: 38px;
+}
+
+.inline-update .button {
+    min-height: 38px;
+}
+
 @media (max-width: 860px) {
     .hero,
     .content-grid,
@@ -529,6 +615,14 @@ th {
 
     .metric-grid {
         grid-template-columns: 1fr;
+    }
+
+    .task-form {
+        grid-template-columns: 1fr;
+    }
+
+    .task-form .form-wide {
+        grid-column: auto;
     }
 }
 

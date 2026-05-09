@@ -59,6 +59,15 @@
         <url-pattern>/logout</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>TareaController</servlet-name>
+        <servlet-class>com.mycompany.is.controller.TareaController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TareaController</servlet-name>
+        <url-pattern>/tareas</url-pattern>
+    </servlet-mapping>
+
     <session-config>
         <session-timeout>
             30

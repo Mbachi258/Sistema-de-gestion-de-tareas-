@@ -24,6 +24,11 @@ Usuarios de prueba:
 - `admin@empresa.com` / `admin123`
 - `carlos@empresa.com` / `usuario123`
 
+## Roles
+
+- Administrador: ve la operacion completa, asigna tareas y puede actualizar avances.
+- Usuario: ve sus tareas asignadas y actualiza progreso/comentarios.
+
 ## Ejecucion
 
 1. Inicia MySQL desde XAMPP en el puerto `3308`.

@@ -1,8 +1,3 @@
--- =============================================
--- Base de datos: gestion_tareas
--- Sistema de gestion de tareas con MVC, JSP, Servlets y JDBC
--- =============================================
-
 CREATE DATABASE IF NOT EXISTS gestion_tareas
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
@@ -16,7 +11,6 @@ DROP TABLE IF EXISTS grupos;
 DROP TABLE IF EXISTS usuarios;
 SET FOREIGN_KEY_CHECKS = 1;
 
--- Usuarios del sistema.
 CREATE TABLE usuarios (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(50) NOT NULL,
@@ -27,7 +21,6 @@ CREATE TABLE usuarios (
     activo BOOLEAN DEFAULT TRUE
 );
 
--- Grupos o equipos de trabajo.
 CREATE TABLE grupos (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(100) NOT NULL,
@@ -39,7 +32,6 @@ CREATE TABLE grupos (
         FOREIGN KEY (admin_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
--- Relacion muchos a muchos entre grupos y usuarios.
 CREATE TABLE grupo_usuarios (
     grupo_id INT NOT NULL,
     usuario_id INT NOT NULL,
@@ -52,7 +44,6 @@ CREATE TABLE grupo_usuarios (
         FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
--- Tareas asignadas a usuarios dentro de un grupo.
 CREATE TABLE tareas (
     id INT PRIMARY KEY AUTO_INCREMENT,
     titulo VARCHAR(150) NOT NULL,
@@ -89,9 +80,6 @@ CREATE INDEX idx_tareas_prioridad ON tareas(prioridad);
 CREATE INDEX idx_tareas_fecha_limite ON tareas(fecha_limite);
 CREATE INDEX idx_tareas_usuario_grupo ON tareas(usuario_id, grupo_id);
 
--- Contrasenas de prueba:
--- admin@empresa.com / admin123
--- carlos@empresa.com / usuario123
 INSERT INTO usuarios (nombre, email, password, rol) VALUES
 ('Ana Garcia', 'admin@empresa.com', SHA2('admin123', 256), 'admin'),
 ('Carlos Lopez', 'carlos@empresa.com', SHA2('usuario123', 256), 'usuario'),

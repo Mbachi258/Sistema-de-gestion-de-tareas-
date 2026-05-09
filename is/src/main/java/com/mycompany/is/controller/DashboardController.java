@@ -27,20 +27,38 @@ public class DashboardController extends HttpServlet {
         }
 
         try {
+            boolean admin = "admin".equalsIgnoreCase(usuario.getRol());
+            boolean soloUsuario = !admin;
             DashboardResumen resumen = new DashboardResumen();
             resumen.setTotalUsuarios(usuarioDao.contarActivos());
-            resumen.setTareasPendientes(tareaDao.contarPendientes());
+            resumen.setTareasPendientes(tareaDao.contarPendientes(usuario.getId(), soloUsuario));
             resumen.setGruposActivos(grupoDao.contarActivos());
-            resumen.getTareasPorPrioridad().putAll(tareaDao.contarPorPrioridad());
+            resumen.getTareasPorPrioridad().putAll(tareaDao.contarPorPrioridad(usuario.getId(), soloUsuario));
 
-            boolean soloUsuario = !"admin".equalsIgnoreCase(usuario.getRol());
+            request.setAttribute("esAdmin", admin);
             request.setAttribute("resumen", resumen);
             request.setAttribute("grupos", grupoDao.listarEstadisticas());
+            request.setAttribute("usuariosDisponibles", usuarioDao.listarActivos());
+            request.setAttribute("gruposDisponibles", grupoDao.listarActivos());
             request.setAttribute("tareas", tareaDao.listarRecientes(usuario.getId(), soloUsuario));
+            moverFlash(request);
             request.getRequestDispatcher("/WEB-INF/views/dashboard.jsp").forward(request, response);
         } catch (Exception e) {
             request.setAttribute("error", "No pudimos cargar el panel en este momento. Intentalo nuevamente.");
             request.getRequestDispatcher("/WEB-INF/views/dashboard.jsp").forward(request, response);
+        }
+    }
+
+    private void moverFlash(HttpServletRequest request) {
+        Object error = request.getSession().getAttribute("flashError");
+        Object exito = request.getSession().getAttribute("flashExito");
+        if (error != null) {
+            request.setAttribute("error", error);
+            request.getSession().removeAttribute("flashError");
+        }
+        if (exito != null) {
+            request.setAttribute("exito", exito);
+            request.getSession().removeAttribute("flashExito");
         }
     }
 }

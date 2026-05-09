@@ -8,6 +8,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UsuarioDao {
 
@@ -62,6 +64,22 @@ public class UsuarioDao {
                 ResultSet rs = stmt.executeQuery()) {
             return rs.next() ? rs.getInt(1) : 0;
         }
+    }
+
+    public List<Usuario> listarActivos() throws SQLException {
+        String sql = "SELECT id, nombre, email, password, rol, fecha_registro, activo "
+                + "FROM usuarios WHERE activo = TRUE ORDER BY nombre";
+        List<Usuario> usuarios = new ArrayList<>();
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Usuario usuario = mapearUsuario(rs);
+                usuario.setPassword(null);
+                usuarios.add(usuario);
+            }
+        }
+        return usuarios;
     }
 
     private Usuario mapearUsuario(ResultSet rs) throws SQLException {

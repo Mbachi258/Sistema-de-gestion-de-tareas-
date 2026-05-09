@@ -1,5 +1,6 @@
 package com.mycompany.is.dao;
 
+import com.mycompany.is.model.Grupo;
 import com.mycompany.is.model.GrupoEstadistica;
 import com.mycompany.is.util.DatabaseConnection;
 import java.sql.Connection;
@@ -18,6 +19,29 @@ public class GrupoDao {
                 ResultSet rs = stmt.executeQuery()) {
             return rs.next() ? rs.getInt(1) : 0;
         }
+    }
+
+    public List<Grupo> listarActivos() throws SQLException {
+        String sql = "SELECT id, nombre, descripcion, admin_id, fecha_creacion, activo "
+                + "FROM grupos WHERE activo = TRUE ORDER BY nombre";
+        List<Grupo> grupos = new ArrayList<>();
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Grupo grupo = new Grupo();
+                grupo.setId(rs.getInt("id"));
+                grupo.setNombre(rs.getString("nombre"));
+                grupo.setDescripcion(rs.getString("descripcion"));
+                grupo.setAdminId(rs.getInt("admin_id"));
+                grupo.setActivo(rs.getBoolean("activo"));
+                if (rs.getTimestamp("fecha_creacion") != null) {
+                    grupo.setFechaCreacion(rs.getTimestamp("fecha_creacion").toLocalDateTime());
+                }
+                grupos.add(grupo);
+            }
+        }
+        return grupos;
     }
 
     public List<GrupoEstadistica> listarEstadisticas() throws SQLException {
