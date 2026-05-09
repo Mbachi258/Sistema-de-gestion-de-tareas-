@@ -103,7 +103,7 @@ public class TareaController extends HttpServlet {
 
     private String actualizarTarea(HttpServletRequest request, Usuario usuario) throws Exception {
         int tareaId = entero(request.getParameter("tareaId"));
-        int progreso = Math.max(0, Math.min(100, entero(request.getParameter("progreso"))));
+        int progreso = progresoPermitido(entero(request.getParameter("progreso")));
         boolean trabajador = "usuario".equalsIgnoreCase(usuario.getRol());
 
         if (tareaId <= 0 || !trabajador) {
@@ -147,5 +147,18 @@ public class TareaController extends HttpServlet {
         } catch (NumberFormatException e) {
             return 0;
         }
+    }
+
+    private int progresoPermitido(int progreso) {
+        if (progreso >= 100) {
+            return 100;
+        }
+        if (progreso >= 75) {
+            return 75;
+        }
+        if (progreso >= 50) {
+            return 50;
+        }
+        return 0;
     }
 }

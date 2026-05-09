@@ -67,7 +67,7 @@ CREATE TABLE tareas (
         FOREIGN KEY (grupo_id) REFERENCES grupos(id) ON DELETE CASCADE,
     CONSTRAINT fk_tareas_asignado_por
         FOREIGN KEY (asignado_por) REFERENCES usuarios(id) ON DELETE CASCADE,
-    CONSTRAINT chk_tareas_progreso CHECK (progreso BETWEEN 0 AND 100)
+    CONSTRAINT chk_tareas_progreso CHECK (progreso IN (0, 50, 75, 100))
 );
 
 CREATE INDEX idx_usuarios_email ON usuarios(email);
@@ -87,33 +87,82 @@ INSERT INTO usuarios (nombre, email, password, rol) VALUES
 ('Ana Garcia', 'admin@empresa.com', SHA2('admin123', 256), 'admin'),
 ('Carlos Lopez', 'carlos@empresa.com', SHA2('lider123', 256), 'lider'),
 ('Maria Rodriguez', 'maria@empresa.com', SHA2('lider123', 256), 'lider'),
+('Jorge Ramirez', 'jorge@empresa.com', SHA2('lider123', 256), 'lider'),
+('Valeria Torres', 'valeria@empresa.com', SHA2('lider123', 256), 'lider'),
 ('Pedro Sanchez', 'pedro@empresa.com', SHA2('usuario123', 256), 'usuario'),
-('Laura Martinez', 'laura@empresa.com', SHA2('usuario123', 256), 'usuario');
+('Laura Martinez', 'laura@empresa.com', SHA2('usuario123', 256), 'usuario'),
+('Sofia Herrera', 'sofia@empresa.com', SHA2('usuario123', 256), 'usuario'),
+('Diego Vargas', 'diego@empresa.com', SHA2('usuario123', 256), 'usuario'),
+('Camila Flores', 'camila@empresa.com', SHA2('usuario123', 256), 'usuario'),
+('Luis Mendoza', 'luis@empresa.com', SHA2('usuario123', 256), 'usuario'),
+('Andrea Castro', 'andrea@empresa.com', SHA2('usuario123', 256), 'usuario'),
+('Miguel Rojas', 'miguel@empresa.com', SHA2('usuario123', 256), 'usuario'),
+('Patricia Silva', 'patricia@empresa.com', SHA2('usuario123', 256), 'usuario'),
+('Fernando Ruiz', 'fernando@empresa.com', SHA2('usuario123', 256), 'usuario'),
+('Lucia Navarro', 'lucia@empresa.com', SHA2('usuario123', 256), 'usuario'),
+('Raul Medina', 'raul@empresa.com', SHA2('usuario123', 256), 'usuario'),
+('Elena Morales', 'elena@empresa.com', SHA2('usuario123', 256), 'usuario'),
+('Hector Paredes', 'hector@empresa.com', SHA2('usuario123', 256), 'usuario'),
+('Natalia Cruz', 'natalia@empresa.com', SHA2('usuario123', 256), 'usuario'),
+('Rosa Aguilar', 'rosa@empresa.com', SHA2('usuario123', 256), 'usuario'),
+('Marco Salazar', 'marco@empresa.com', SHA2('usuario123', 256), 'usuario'),
+('Gabriela Leon', 'gabriela@empresa.com', SHA2('usuario123', 256), 'usuario'),
+('Oscar Vega', 'oscar@empresa.com', SHA2('usuario123', 256), 'usuario'),
+('Claudia Campos', 'claudia@empresa.com', SHA2('usuario123', 256), 'usuario');
 
 INSERT INTO grupos (nombre, descripcion, admin_id, lider_id) VALUES
 ('Desarrollo Frontend', 'Equipo encargado de la interfaz de usuario y experiencia web', 1, 2),
-('Desarrollo Backend', 'Equipo encargado de APIs, base de datos y logica del servidor', 1, 2),
-('Diseno UI/UX', 'Equipo de diseno de interfaces y experiencia de usuario', 1, 3),
-('Calidad QA', 'Equipo de pruebas y control de calidad', 1, 3);
+('Desarrollo Backend', 'Equipo encargado de APIs, base de datos y logica del servidor', 1, 3),
+('Diseno UI/UX', 'Equipo de diseno de interfaces y experiencia de usuario', 1, 4),
+('Calidad QA', 'Equipo de pruebas y control de calidad', 1, 5);
 
 INSERT INTO grupo_usuarios (grupo_id, usuario_id) VALUES
 (1, 2),
-(1, 3),
-(2, 2),
-(2, 4),
-(3, 3),
-(3, 5),
-(4, 4),
-(4, 5);
+(1, 6),
+(1, 7),
+(1, 8),
+(1, 9),
+(1, 10),
+(2, 3),
+(2, 11),
+(2, 12),
+(2, 13),
+(2, 14),
+(2, 15),
+(3, 4),
+(3, 16),
+(3, 17),
+(3, 18),
+(3, 19),
+(3, 20),
+(4, 5),
+(4, 21),
+(4, 22),
+(4, 23),
+(4, 24),
+(4, 25);
 
 INSERT INTO tareas (titulo, descripcion, usuario_id, grupo_id, asignado_por, fecha_limite, prioridad, estado, progreso) VALUES
-('Disenar menu principal', 'Crear el menu de navegacion responsive para escritorio y movil', 2, 1, 1, '2026-05-20', 'alta', 'en_progreso', 75),
-('Implementar autenticacion', 'Desarrollar login, registro y control de sesiones', 4, 2, 1, '2026-05-25', 'alta', 'pendiente', 0),
-('Disenar logotipo', 'Crear logotipo corporativo y variantes para diferentes fondos', 5, 3, 1, '2026-05-15', 'media', 'completada', 100),
-('Pruebas de usuario', 'Realizar pruebas de usabilidad con usuarios finales', 5, 4, 1, '2026-05-30', 'baja', 'pendiente', 0),
-('Optimizar carga', 'Mejorar tiempo de carga de la pagina principal', 3, 1, 1, '2026-05-18', 'alta', 'en_progreso', 50),
-('Documentar API', 'Crear documentacion tecnica con ejemplos', 2, 2, 1, '2026-05-28', 'media', 'pendiente', 20),
-('Crear paleta de colores', 'Definir paleta corporativa y guia de estilos', 3, 3, 1, '2026-05-10', 'alta', 'completada', 100);
+('Maquetar barra principal', 'Crear la navegacion base para escritorio y movil', 6, 1, 2, '2026-05-20', 'alta', 'en_progreso', 50),
+('Ajustar tarjetas del dashboard', 'Ordenar metricas y estados visuales del panel', 7, 1, 2, '2026-05-22', 'media', 'pendiente', 0),
+('Optimizar estilos responsive', 'Revisar vistas en celular y corregir espacios', 8, 1, 2, '2026-05-24', 'media', 'completada', 100),
+('Integrar formularios web', 'Conectar campos de tareas con la interfaz', 9, 1, 2, '2026-05-26', 'alta', 'en_progreso', 75),
+('Revisar accesibilidad visual', 'Validar contraste, etiquetas y lectura de botones', 10, 1, 2, '2026-05-28', 'baja', 'pendiente', 0),
+('Crear endpoint de tareas', 'Preparar el registro y consulta de tareas del sistema', 11, 2, 3, '2026-05-21', 'alta', 'en_progreso', 50),
+('Validar inicio de sesion', 'Revisar reglas de autenticacion y permisos por rol', 12, 2, 3, '2026-05-23', 'alta', 'completada', 100),
+('Ordenar consultas de grupos', 'Ajustar conteos y filtros para trabajadores', 13, 2, 3, '2026-05-25', 'media', 'en_progreso', 75),
+('Documentar servicios internos', 'Registrar rutas, parametros y respuestas principales', 14, 2, 3, '2026-05-27', 'baja', 'pendiente', 0),
+('Revisar conexion a base de datos', 'Validar credenciales, indices y manejo de errores', 15, 2, 3, '2026-05-29', 'media', 'pendiente', 0),
+('Crear flujo de prototipo', 'Definir pantallas principales para usuarios y lideres', 16, 3, 4, '2026-05-20', 'alta', 'completada', 100),
+('Actualizar paleta visual', 'Ajustar colores para una lectura mas clara', 17, 3, 4, '2026-05-22', 'media', 'en_progreso', 50),
+('Disenar estados de tarea', 'Preparar variantes para inicio, medio, avanzado y terminado', 18, 3, 4, '2026-05-24', 'media', 'pendiente', 0),
+('Revisar textos de interfaz', 'Hacer que los mensajes sean claros y naturales', 19, 3, 4, '2026-05-26', 'baja', 'completada', 100),
+('Organizar guia de componentes', 'Documentar botones, tablas y formularios principales', 20, 3, 4, '2026-05-28', 'media', 'en_progreso', 50),
+('Preparar casos de prueba', 'Crear escenarios para login, grupos y tareas', 21, 4, 5, '2026-05-21', 'alta', 'en_progreso', 50),
+('Ejecutar pruebas funcionales', 'Validar flujos principales del tablero', 22, 4, 5, '2026-05-23', 'alta', 'pendiente', 0),
+('Reportar incidencias visuales', 'Registrar errores de tablas, botones y formularios', 23, 4, 5, '2026-05-25', 'media', 'completada', 100),
+('Verificar permisos por rol', 'Confirmar que cada perfil vea solo lo necesario', 24, 4, 5, '2026-05-27', 'media', 'en_progreso', 75),
+('Cerrar checklist de entrega', 'Revisar pendientes finales antes de publicar', 25, 4, 5, '2026-05-29', 'baja', 'pendiente', 0);
 
 CREATE OR REPLACE VIEW vista_resumen_usuario AS
 SELECT
@@ -189,11 +238,16 @@ CREATE PROCEDURE actualizar_progreso(
 )
 BEGIN
     UPDATE tareas
-    SET progreso = p_progreso,
+    SET progreso = CASE
+            WHEN p_progreso >= 100 THEN 100
+            WHEN p_progreso >= 75 THEN 75
+            WHEN p_progreso >= 50 THEN 50
+            ELSE 0
+        END,
         comentarios = CONCAT(IFNULL(comentarios, ''), '\n[', NOW(), '] ', p_comentario),
         estado = CASE
-            WHEN p_progreso = 0 THEN 'pendiente'
-            WHEN p_progreso = 100 THEN 'completada'
+            WHEN p_progreso >= 100 THEN 'completada'
+            WHEN p_progreso < 50 THEN 'pendiente'
             ELSE 'en_progreso'
         END
     WHERE id = p_tarea_id;

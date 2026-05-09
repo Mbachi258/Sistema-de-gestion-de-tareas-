@@ -275,7 +275,7 @@
                     <tbody>
                     <% if (tareas != null && !tareas.isEmpty()) {
                         for (Tarea tarea : tareas) { %>
-                        <tr><td><%= tarea.getTitulo() %></td><td><%= tarea.getResponsableNombre() %></td><td><%= tarea.getGrupoNombre() %></td><td><span class="tag"><%= tarea.getPrioridad() %></span></td><td><%= tarea.getEstado() %></td><td><div class="progress"><span style="width:<%= tarea.getProgreso() %>%"></span></div><small><%= tarea.getProgreso() %>%</small></td></tr>
+                        <tr><td><%= tarea.getTitulo() %></td><td><%= tarea.getResponsableNombre() %></td><td><%= tarea.getGrupoNombre() %></td><td><span class="tag"><%= tarea.getPrioridad() %></span></td><td><%= "en_progreso".equals(tarea.getEstado()) ? "En progreso" : ("pendiente".equals(tarea.getEstado()) ? "Pendiente" : ("completada".equals(tarea.getEstado()) ? "Completada" : "Cancelada")) %></td><td><div class="progress"><span style="width:<%= tarea.getProgreso() %>%"></span></div><small><%= tarea.getProgreso() %>%</small></td></tr>
                     <%  }
                     } else { %>
                         <tr><td colspan="6">No hay tareas por ahora.</td></tr>
@@ -349,14 +349,16 @@
                 </div>
                 <div class="worker-task-grid">
                     <% if (tareas != null && !tareas.isEmpty()) {
-                        for (Tarea tarea : tareas) { %>
+                        for (Tarea tarea : tareas) {
+                            String avanceNombre = tarea.getProgreso() >= 100 ? "Terminado" : (tarea.getProgreso() >= 75 ? "Avanzado" : (tarea.getProgreso() >= 50 ? "Medio" : "Inicio"));
+                    %>
                     <article class="worker-task-card" data-task-card>
                         <div class="task-card-head">
                             <div>
                                 <span class="tag"><%= tarea.getPrioridad() %></span>
                                 <h2><%= tarea.getTitulo() %></h2>
                             </div>
-                            <strong data-progress-label><%= tarea.getProgreso() %>%</strong>
+                            <strong data-progress-label><%= avanceNombre %></strong>
                         </div>
                         <p><%= tarea.getDescripcion() != null && !tarea.getDescripcion().isEmpty() ? tarea.getDescripcion() : "Sin descripcion" %></p>
                         <div class="task-meta">
@@ -368,7 +370,12 @@
                             <input type="hidden" name="tareaId" value="<%= tarea.getId() %>">
                             <label class="range-label">
                                 Avance
-                                <input type="range" name="progreso" min="0" max="100" value="<%= tarea.getProgreso() %>" data-progress-range>
+                                <select name="progreso" data-progress-choice>
+                                    <option value="0" <%= tarea.getProgreso() < 50 ? "selected" : "" %>>Inicio</option>
+                                    <option value="50" <%= tarea.getProgreso() >= 50 && tarea.getProgreso() < 75 ? "selected" : "" %>>Medio</option>
+                                    <option value="75" <%= tarea.getProgreso() >= 75 && tarea.getProgreso() < 100 ? "selected" : "" %>>Avanzado</option>
+                                    <option value="100" <%= tarea.getProgreso() >= 100 ? "selected" : "" %>>Terminado</option>
+                                </select>
                             </label>
                             <input type="text" name="comentario" placeholder="Subir comentarios">
                             <button class="button button-primary" type="submit">Guardar avance</button>

@@ -41,12 +41,26 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    document.querySelectorAll("[data-progress-range]").forEach(function (range) {
-        const card = range.closest("[data-task-card]");
+    function progressName(value) {
+        const progress = Number(value);
+        if (progress >= 100) {
+            return "Terminado";
+        }
+        if (progress >= 75) {
+            return "Avanzado";
+        }
+        if (progress >= 50) {
+            return "Medio";
+        }
+        return "Inicio";
+    }
+
+    document.querySelectorAll("[data-progress-choice]").forEach(function (choice) {
+        const card = choice.closest("[data-task-card]");
         const label = card ? card.querySelector("[data-progress-label]") : null;
-        range.addEventListener("input", function () {
+        choice.addEventListener("change", function () {
             if (label) {
-                label.textContent = range.value + "%";
+                label.textContent = progressName(choice.value);
             }
         });
     });
@@ -58,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const status = form.querySelector("[data-form-status]");
             const card = form.closest("[data-task-card]");
             const stateLabel = card ? card.querySelector("[data-state-label]") : null;
-            const range = form.querySelector("[data-progress-range]");
+            const progressChoice = form.querySelector("[data-progress-choice]");
             const data = new FormData(form);
             data.set("ajax", "1");
 
@@ -94,8 +108,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (status) {
                         status.textContent = payload.mensaje;
                     }
-                    if (stateLabel && range) {
-                        const value = Number(range.value);
+                    if (stateLabel && progressChoice) {
+                        const value = Number(progressChoice.value);
                         stateLabel.textContent = value === 0 ? "Pendiente" : (value === 100 ? "Completada" : "En progreso");
                     }
                     form.querySelector("input[name='comentario']").value = "";
