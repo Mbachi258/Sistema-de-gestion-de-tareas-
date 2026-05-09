@@ -31,6 +31,8 @@ Usuarios de prueba:
 - Lider: ve solo sus grupos y delega tareas a miembros de esos grupos.
 - Usuario: ve sus tareas asignadas y actualiza progreso/comentarios.
 
+El progreso de trabajadores se guarda con AJAX desde el dashboard, sin recargar la pagina.
+
 ## Ejecucion
 
 1. Inicia MySQL desde XAMPP en el puerto `3308`.

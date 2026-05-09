@@ -74,7 +74,7 @@ public class UsuarioDao {
 
     public List<Usuario> listarLideres() throws SQLException {
         String sql = "SELECT id, nombre, email, password, rol, fecha_registro, activo "
-                + "FROM usuarios WHERE activo = TRUE AND rol IN ('admin', 'lider') ORDER BY nombre";
+                + "FROM usuarios WHERE activo = TRUE AND rol IN ('lider', 'usuario') ORDER BY nombre";
         return listarPorSql(sql);
     }
 

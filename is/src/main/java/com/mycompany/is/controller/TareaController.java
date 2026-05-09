@@ -20,8 +20,13 @@ public class TareaController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
+        boolean ajax = "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         if (usuario == null) {
+            if (ajax) {
+                responderJson(response, false, "Sesion expirada. Vuelve a ingresar.");
+                return;
+            }
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
@@ -31,9 +36,17 @@ public class TareaController extends HttpServlet {
             if ("asignar".equals(accion)) {
                 asignarTarea(request, usuario);
             } else if ("actualizar".equals(accion)) {
-                actualizarTarea(request, usuario);
+                String mensaje = actualizarTarea(request, usuario);
+                if (ajax) {
+                    responderJson(response, true, mensaje);
+                    return;
+                }
             }
         } catch (Exception e) {
+            if (ajax) {
+                responderJson(response, false, "No pudimos procesar la accion. Intentalo nuevamente.");
+                return;
+            }
             request.getSession().setAttribute("flashError", "No pudimos procesar la accion. Intentalo nuevamente.");
         }
 
@@ -80,14 +93,14 @@ public class TareaController extends HttpServlet {
         request.getSession().setAttribute("flashExito", "Tarea asignada correctamente.");
     }
 
-    private void actualizarTarea(HttpServletRequest request, Usuario usuario) throws Exception {
+    private String actualizarTarea(HttpServletRequest request, Usuario usuario) throws Exception {
         int tareaId = entero(request.getParameter("tareaId"));
         int progreso = Math.max(0, Math.min(100, entero(request.getParameter("progreso"))));
         boolean trabajador = "usuario".equalsIgnoreCase(usuario.getRol());
 
         if (tareaId <= 0 || !trabajador) {
             request.getSession().setAttribute("flashError", "Selecciona una tarea valida.");
-            return;
+            throw new IllegalArgumentException("Tarea no disponible");
         }
 
         boolean actualizado = tareaDao.actualizarProgreso(
@@ -100,9 +113,20 @@ public class TareaController extends HttpServlet {
 
         if (actualizado) {
             request.getSession().setAttribute("flashExito", "Avance actualizado correctamente.");
+            return "Avance actualizado correctamente.";
         } else {
             request.getSession().setAttribute("flashError", "No se encontro una tarea disponible para actualizar.");
+            throw new IllegalArgumentException("Tarea no disponible");
         }
+    }
+
+    private void responderJson(HttpServletResponse response, boolean ok, String mensaje) throws IOException {
+        response.setContentType("application/json;charset=UTF-8");
+        response.getWriter().write("{\"ok\":" + ok + ",\"mensaje\":\"" + escaparJson(mensaje) + "\"}");
+    }
+
+    private String escaparJson(String texto) {
+        return texto == null ? "" : texto.replace("\\", "\\\\").replace("\"", "\\\"");
     }
 
     private String valor(String texto) {

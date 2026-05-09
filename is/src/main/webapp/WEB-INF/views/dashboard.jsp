@@ -25,7 +25,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - TaskFlow Enterprise</title>
     <base href="<%= request.getContextPath() %>/">
-    <link rel="stylesheet" href="css/estilo.css?v=20260509-1">
+    <link rel="stylesheet" href="css/estilo.css?v=20260509-2">
 </head>
 <body class="dashboard-page">
     <header class="topbar dashboard-topbar">
@@ -38,11 +38,13 @@
     </header>
 
     <main class="dashboard-layout">
-        <section class="page-title">
-            <p class="eyebrow"><%= esAdmin ? "Estructura organizacional" : (esLider ? "Delegacion de equipo" : "Mi trabajo") %></p>
-            <h1><%= esAdmin ? "Gestiona grupos y lideres" : (esLider ? "Coordina tu grupo" : "Actualiza tu progreso") %></h1>
-            <p><%= esAdmin ? "Crea grupos, asigna lideres y suma trabajadores a cada equipo." : (esLider ? "Asigna tareas solo a miembros de tus grupos." : "Revisa tus tareas y reporta avances sin ver informacion de otros grupos.") %></p>
+        <section class="page-title page-title-hero">
+            <p class="eyebrow"><%= esAdmin ? "Estructura organizacional" : (esLider ? "Delegacion de equipo" : "Mi tablero personal") %></p>
+            <h1><%= esAdmin ? "Organiza equipos sin mezclar tareas" : (esLider ? "Coordina solo tu grupo" : "Avanza tus tareas sin recargar") %></h1>
+            <p><%= esAdmin ? "Tu vista se concentra en grupos, lideres y trabajadores. Las tareas quedan en manos de los lideres." : (esLider ? "Delega tareas a miembros de tus grupos y revisa el avance sin ver otros equipos." : "Usa los controles de progreso para reportar cambios al instante.") %></p>
         </section>
+
+        <div id="ajaxMessage" class="ajax-message" hidden></div>
 
         <% if (request.getAttribute("error") != null) { %>
             <div class="alert alert-error"><%= request.getAttribute("error") %></div>
@@ -57,12 +59,12 @@
                 <strong><%= esAdmin ? (resumen != null ? resumen.getTotalUsuarios() : 0) : (esLider ? (usuariosDisponibles != null ? usuariosDisponibles.size() : 0) : (tareas != null ? tareas.size() : 0)) %></strong>
             </article>
             <article class="stat-card">
-                <span>Tareas abiertas</span>
-                <strong><%= resumen != null ? resumen.getTareasPendientes() : 0 %></strong>
+                <span><%= esAdmin ? "Grupos gestionados" : "Tareas abiertas" %></span>
+                <strong><%= esAdmin ? (resumen != null ? resumen.getGruposActivos() : 0) : (resumen != null ? resumen.getTareasPendientes() : 0) %></strong>
             </article>
             <article class="stat-card">
-                <span><%= esAdmin ? "Grupos activos" : "Grupos visibles" %></span>
-                <strong><%= esAdmin ? (resumen != null ? resumen.getGruposActivos() : 0) : (gruposDisponibles != null ? gruposDisponibles.size() : 0) %></strong>
+                <span><%= esAdmin ? "Lideres disponibles" : "Grupos visibles" %></span>
+                <strong><%= esAdmin ? (lideresDisponibles != null ? lideresDisponibles.size() : 0) : (gruposDisponibles != null ? gruposDisponibles.size() : 0) %></strong>
             </article>
         </section>
 
@@ -72,15 +74,12 @@
                 <div class="panel-heading">
                     <div>
                         <h2>Crear grupo con lider</h2>
-                        <p>El lider queda como responsable operativo del grupo.</p>
+                        <p>El lider recibe el alcance operativo del grupo.</p>
                     </div>
                 </div>
                 <form class="task-form compact-form" action="grupos" method="post">
                     <input type="hidden" name="accion" value="crear">
-                    <label>
-                        Nombre del grupo
-                        <input type="text" name="nombre" placeholder="Ej. Ventas Norte" required>
-                    </label>
+                    <label>Nombre del grupo<input type="text" name="nombre" placeholder="Ej. Ventas Norte" required></label>
                     <label>
                         Lider
                         <select name="liderId" required>
@@ -92,10 +91,7 @@
                             } %>
                         </select>
                     </label>
-                    <label class="form-wide">
-                        Descripcion
-                        <input type="text" name="descripcion" placeholder="Alcance del equipo">
-                    </label>
+                    <label class="form-wide">Descripcion<input type="text" name="descripcion" placeholder="Alcance del equipo"></label>
                     <button class="button button-primary" type="submit">Crear grupo</button>
                 </form>
             </article>
@@ -104,7 +100,7 @@
                 <div class="panel-heading">
                     <div>
                         <h2>Agregar trabajador</h2>
-                        <p>Los miembros solo podran ver tareas de su propio grupo.</p>
+                        <p>El trabajador queda asociado al grupo seleccionado.</p>
                     </div>
                 </div>
                 <form class="task-form compact-form" action="grupos" method="post">
@@ -135,6 +131,55 @@
                 </form>
             </article>
         </section>
+
+        <section class="panel team-overview">
+            <div class="panel-heading">
+                <div>
+                    <h2>Estado por equipo</h2>
+                    <p>Vista general para revisar avance sin mezclar todas las tareas.</p>
+                </div>
+            </div>
+            <div class="org-grid">
+            <% if (gruposDisponibles != null && !gruposDisponibles.isEmpty()) {
+                for (Grupo grupo : gruposDisponibles) {
+                    GrupoEstadistica estadistica = null;
+                    if (grupos != null) {
+                        for (GrupoEstadistica item : grupos) {
+                            if (item.getNombre().equals(grupo.getNombre())) {
+                                estadistica = item;
+                                break;
+                            }
+                        }
+                    }
+                    int totalTareas = estadistica != null ? estadistica.getTotalTareas() : 0;
+                    int totalMiembros = estadistica != null ? estadistica.getTotalMiembros() : 0;
+                    int tareasCompletadas = estadistica != null ? estadistica.getTareasCompletadas() : 0;
+                    double promedio = estadistica != null ? estadistica.getProgresoPromedio() : 0;
+            %>
+            <article class="group-card">
+                <div class="group-card-head">
+                    <div>
+                        <span>Equipo</span>
+                        <strong><%= grupo.getNombre() %></strong>
+                    </div>
+                    <b><%= Math.round(promedio) %>%</b>
+                </div>
+                <div class="progress team-progress"><span style="width:<%= Math.round(promedio) %>%"></span></div>
+                <p><%= grupo.getDescripcion() != null && !grupo.getDescripcion().isEmpty() ? grupo.getDescripcion() : "Sin descripcion" %></p>
+                <button type="button" class="button button-secondary full-width" data-toggle-detail>Ver detalle</button>
+                <div class="team-detail" hidden>
+                    <div><span>Lider</span><strong><%= grupo.getLiderNombre() != null ? grupo.getLiderNombre() : "Sin lider" %></strong></div>
+                    <div><span>Miembros</span><strong><%= totalMiembros %></strong></div>
+                    <div><span>Tareas</span><strong><%= totalTareas %></strong></div>
+                    <div><span>Completadas</span><strong><%= tareasCompletadas %></strong></div>
+                </div>
+            </article>
+            <%  }
+            } else { %>
+            <article class="group-card"><strong>No hay grupos creados</strong></article>
+            <% } %>
+            </div>
+        </section>
         <% } %>
 
         <% if (esLider) { %>
@@ -142,15 +187,12 @@
             <div class="panel-heading">
                 <div>
                     <h2>Delegar tarea</h2>
-                    <p>Solo puedes asignar tareas dentro de los grupos que lideras.</p>
+                    <p>Solo aparecen miembros y grupos bajo tu liderazgo.</p>
                 </div>
             </div>
             <form class="task-form" action="tareas" method="post">
                 <input type="hidden" name="accion" value="asignar">
-                <label>
-                    Titulo
-                    <input type="text" name="titulo" placeholder="Ej. Preparar reporte semanal" required>
-                </label>
+                <label>Titulo<input type="text" name="titulo" placeholder="Ej. Preparar reporte semanal" required></label>
                 <label>
                     Responsable
                     <select name="usuarioId" required>
@@ -181,60 +223,36 @@
                         <option value="baja">Baja</option>
                     </select>
                 </label>
-                <label>
-                    Fecha limite
-                    <input type="date" name="fechaLimite">
-                </label>
-                <label class="form-wide">
-                    Descripcion
-                    <input type="text" name="descripcion" placeholder="Contexto breve de la tarea">
-                </label>
+                <label>Fecha limite<input type="date" name="fechaLimite"></label>
+                <label class="form-wide">Descripcion<input type="text" name="descripcion" placeholder="Contexto breve de la tarea"></label>
                 <button class="button button-primary" type="submit">Delegar</button>
             </form>
         </section>
-        <% } %>
 
-        <section class="content-grid">
+        <section class="leader-grid">
             <article class="panel">
-                <h2>Prioridades</h2>
+                <h2>Prioridades de mi equipo</h2>
                 <div class="priority-list">
                     <% if (resumen != null) {
                         for (Map.Entry<String, Integer> entry : resumen.getTareasPorPrioridad().entrySet()) { %>
-                    <div class="priority-row">
-                        <span class="priority <%= entry.getKey() %>"></span>
-                        <span><%= entry.getKey() %></span>
-                        <strong><%= entry.getValue() %></strong>
-                    </div>
+                    <div class="priority-row"><span class="priority <%= entry.getKey() %>"></span><span><%= entry.getKey() %></span><strong><%= entry.getValue() %></strong></div>
                     <%  }
                     } %>
                 </div>
             </article>
-
             <article class="panel">
-                <h2><%= esAdmin ? "Grupos de la empresa" : "Grupos visibles" %></h2>
+                <h2>Mis grupos</h2>
                 <div class="table-wrap">
                     <table>
-                        <thead>
-                            <tr>
-                                <th>Grupo</th>
-                                <th>Miembros</th>
-                                <th>Tareas</th>
-                                <th>Promedio</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th>Grupo</th><th>Miembros</th><th>Tareas</th><th>Promedio</th></tr></thead>
                         <tbody>
-                            <% if (grupos != null && !grupos.isEmpty()) {
-                                for (GrupoEstadistica grupo : grupos) { %>
-                            <tr>
-                                <td><%= grupo.getNombre() %></td>
-                                <td><%= grupo.getTotalMiembros() %></td>
-                                <td><%= grupo.getTotalTareas() %></td>
-                                <td><%= grupo.getProgresoPromedio() %>%</td>
-                            </tr>
-                            <%  }
-                            } else { %>
+                        <% if (grupos != null && !grupos.isEmpty()) {
+                            for (GrupoEstadistica grupo : grupos) { %>
+                            <tr><td><%= grupo.getNombre() %></td><td><%= grupo.getTotalMiembros() %></td><td><%= grupo.getTotalTareas() %></td><td><%= grupo.getProgresoPromedio() %>%</td></tr>
+                        <%  }
+                        } else { %>
                             <tr><td colspan="4">No hay grupos para mostrar.</td></tr>
-                            <% } %>
+                        <% } %>
                         </tbody>
                     </table>
                 </div>
@@ -242,58 +260,57 @@
         </section>
 
         <section class="panel">
-            <div class="panel-heading">
-                <div>
-                    <h2><%= esTrabajador ? "Actualizar mis avances" : "Seguimiento de tareas" %></h2>
-                    <p><%= esTrabajador ? "Cada trabajador actualiza su propio progreso." : "Vista de control segun tu alcance de rol." %></p>
-                </div>
-            </div>
+            <div class="panel-heading"><div><h2>Seguimiento de tareas</h2><p>Vista de avance del equipo, sin editar progreso del trabajador.</p></div></div>
             <div class="table-wrap">
                 <table class="tasks-table">
-                    <thead>
-                        <tr>
-                            <th>Titulo</th>
-                            <th>Responsable</th>
-                            <th>Grupo</th>
-                            <th>Prioridad</th>
-                            <th>Estado</th>
-                            <th>Progreso</th>
-                            <% if (esTrabajador) { %><th>Accion</th><% } %>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Titulo</th><th>Responsable</th><th>Grupo</th><th>Prioridad</th><th>Estado</th><th>Progreso</th></tr></thead>
                     <tbody>
-                        <% if (tareas != null && !tareas.isEmpty()) {
-                            for (Tarea tarea : tareas) { %>
-                        <tr>
-                            <td><%= tarea.getTitulo() %></td>
-                            <td><%= tarea.getResponsableNombre() %></td>
-                            <td><%= tarea.getGrupoNombre() %></td>
-                            <td><span class="tag"><%= tarea.getPrioridad() %></span></td>
-                            <td><%= tarea.getEstado() %></td>
-                            <td>
-                                <div class="progress"><span style="width:<%= tarea.getProgreso() %>%"></span></div>
-                                <small><%= tarea.getProgreso() %>%</small>
-                            </td>
-                            <% if (esTrabajador) { %>
-                            <td>
-                                <form class="inline-update" action="tareas" method="post">
-                                    <input type="hidden" name="accion" value="actualizar">
-                                    <input type="hidden" name="tareaId" value="<%= tarea.getId() %>">
-                                    <input type="number" name="progreso" min="0" max="100" value="<%= tarea.getProgreso() %>" aria-label="Progreso">
-                                    <input type="text" name="comentario" placeholder="Comentario">
-                                    <button class="button button-secondary" type="submit">Guardar</button>
-                                </form>
-                            </td>
-                            <% } %>
-                        </tr>
-                        <%  }
-                        } else { %>
-                        <tr><td colspan="<%= esTrabajador ? 7 : 6 %>">No hay tareas para mostrar.</td></tr>
-                        <% } %>
+                    <% if (tareas != null && !tareas.isEmpty()) {
+                        for (Tarea tarea : tareas) { %>
+                        <tr><td><%= tarea.getTitulo() %></td><td><%= tarea.getResponsableNombre() %></td><td><%= tarea.getGrupoNombre() %></td><td><span class="tag"><%= tarea.getPrioridad() %></span></td><td><%= tarea.getEstado() %></td><td><div class="progress"><span style="width:<%= tarea.getProgreso() %>%"></span></div><small><%= tarea.getProgreso() %>%</small></td></tr>
+                    <%  }
+                    } else { %>
+                        <tr><td colspan="6">No hay tareas para mostrar.</td></tr>
+                    <% } %>
                     </tbody>
                 </table>
             </div>
         </section>
+        <% } %>
+
+        <% if (esTrabajador) { %>
+        <section class="worker-task-grid">
+            <% if (tareas != null && !tareas.isEmpty()) {
+                for (Tarea tarea : tareas) { %>
+            <article class="worker-task-card" data-task-card>
+                <div class="task-card-head">
+                    <div>
+                        <span class="tag"><%= tarea.getPrioridad() %></span>
+                        <h2><%= tarea.getTitulo() %></h2>
+                    </div>
+                    <strong data-progress-label><%= tarea.getProgreso() %>%</strong>
+                </div>
+                <p><%= tarea.getDescripcion() != null && !tarea.getDescripcion().isEmpty() ? tarea.getDescripcion() : "Sin descripcion" %></p>
+                <div class="task-meta"><span><%= tarea.getGrupoNombre() %></span><span data-state-label><%= tarea.getEstado() %></span></div>
+                <form class="ajax-progress-form" action="tareas" method="post">
+                    <input type="hidden" name="accion" value="actualizar">
+                    <input type="hidden" name="tareaId" value="<%= tarea.getId() %>">
+                    <label class="range-label">
+                        Progreso
+                        <input type="range" name="progreso" min="0" max="100" value="<%= tarea.getProgreso() %>" data-progress-range>
+                    </label>
+                    <input type="text" name="comentario" placeholder="Comentario breve">
+                    <button class="button button-primary" type="submit">Guardar avance</button>
+                    <small class="form-status" data-form-status></small>
+                </form>
+            </article>
+            <%  }
+            } else { %>
+            <article class="worker-task-card"><h2>No tienes tareas asignadas</h2></article>
+            <% } %>
+        </section>
+        <% } %>
     </main>
+    <script src="js/script.js?v=20260509-2"></script>
 </body>
 </html>
