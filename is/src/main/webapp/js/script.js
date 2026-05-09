@@ -50,6 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const stateLabel = card ? card.querySelector("[data-state-label]") : null;
             const range = form.querySelector("[data-progress-range]");
             const data = new FormData(form);
+            data.set("ajax", "1");
 
             if (button) {
                 button.disabled = true;
@@ -63,11 +64,18 @@ document.addEventListener("DOMContentLoaded", function () {
                 method: "POST",
                 body: data,
                 headers: {
-                    "X-Requested-With": "XMLHttpRequest"
+                    "X-Requested-With": "XMLHttpRequest",
+                    "Accept": "application/json"
                 }
             })
                 .then(function (response) {
-                    return response.json();
+                    return response.text().then(function (text) {
+                        try {
+                            return JSON.parse(text);
+                        } catch (error) {
+                            throw new Error("No pudimos guardar. Recarga la pagina e intenta otra vez.");
+                        }
+                    });
                 })
                 .then(function (payload) {
                     if (!payload.ok) {
@@ -78,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                     if (stateLabel && range) {
                         const value = Number(range.value);
-                        stateLabel.textContent = value === 0 ? "pendiente" : (value === 100 ? "completada" : "en_progreso");
+                        stateLabel.textContent = value === 0 ? "Pendiente" : (value === 100 ? "Completada" : "En progreso");
                     }
                     form.querySelector("input[name='comentario']").value = "";
                 })

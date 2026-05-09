@@ -29,7 +29,7 @@ public class RegistroController extends HttpServlet {
         String confirmarPassword = valor(request.getParameter("confirmarPassword"));
 
         if (nombre.isEmpty() || email.isEmpty() || password.isEmpty() || confirmarPassword.isEmpty()) {
-            request.setAttribute("error", "Completa todos los campos para crear tu cuenta.");
+            request.setAttribute("error", "Completa todos los datos para crear tu cuenta.");
             request.getRequestDispatcher("/WEB-INF/views/registro.jsp").forward(request, response);
             return;
         }
@@ -55,10 +55,10 @@ public class RegistroController extends HttpServlet {
 
             Usuario usuario = new Usuario(nombre, email, PasswordUtil.hash(password), "usuario");
             usuarioDao.crear(usuario);
-            request.setAttribute("exito", "Cuenta creada correctamente. Ya puedes iniciar sesion.");
+            request.setAttribute("exito", "Cuenta creada. Ya puedes ingresar.");
             request.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(request, response);
         } catch (Exception e) {
-            request.setAttribute("error", "No pudimos completar el registro en este momento. Intentalo nuevamente.");
+            request.setAttribute("error", "No pudimos crear la cuenta. Intentalo otra vez.");
             request.getRequestDispatcher("/WEB-INF/views/registro.jsp").forward(request, response);
         }
     }

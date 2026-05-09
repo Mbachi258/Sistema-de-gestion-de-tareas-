@@ -4,16 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ingresar - TaskFlow Enterprise</title>
+    <title>Ingresar - TaskFlow</title>
     <base href="<%= request.getContextPath() %>/">
     <link rel="stylesheet" href="css/estilo.css?v=20260508-5">
 </head>
 <body class="auth-page">
     <main class="auth-shell">
         <section class="auth-card">
-            <a class="brand auth-brand" href="./">TaskFlow Enterprise</a>
-            <h1>Ingresa a tu panel</h1>
-            <p>Usa tu email y contrasena para continuar.</p>
+            <a class="brand auth-brand" href="./">TaskFlow</a>
+            <h1>Bienvenido de nuevo</h1>
+            <p>Entra para revisar tus equipos, tareas y avances.</p>
 
             <% if (request.getAttribute("error") != null) { %>
                 <div class="alert alert-error"><%= request.getAttribute("error") %></div>
@@ -35,7 +35,7 @@
                 <button class="button button-primary full-width" type="submit">Ingresar</button>
             </form>
 
-            <p class="form-footer">No tienes cuenta? <a href="registro">Solicita acceso</a></p>
+            <p class="form-footer">No tienes cuenta? <a href="registro">Crea una cuenta</a></p>
         </section>
     </main>
     <script src="js/script.js?v=20260508-5"></script>

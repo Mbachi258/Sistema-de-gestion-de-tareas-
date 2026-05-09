@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskFlow Enterprise</title>
+    <title>TaskFlow</title>
     <base href="<%= request.getContextPath() %>/">
     <link rel="stylesheet" href="css/estilo.css?v=20260508-3">
 </head>
 <body class="page-home">
     <header class="topbar">
-        <a class="brand" href="./">TaskFlow Enterprise</a>
+        <a class="brand" href="./">TaskFlow</a>
         <nav class="nav-actions">
             <a href="login">Ingresar</a>
         </nav>
@@ -18,55 +18,55 @@
 
     <main class="hero">
         <section class="hero-copy">
-            <p class="eyebrow">Gestion operativa para empresas</p>
-            <h1>Coordina tareas, responsables y avances con vision ejecutiva.</h1>
+            <p class="eyebrow">Trabajo en equipo, sin desorden</p>
+            <h1>Organiza tareas, equipos y avances en un solo lugar.</h1>
             <p class="hero-text">
-                Centraliza el trabajo de areas, proyectos y equipos en una plataforma pensada
-                para organizaciones que necesitan trazabilidad, prioridad y control diario.
+                Crea equipos, reparte pendientes y sigue el avance diario sin perder de vista
+                lo que cada persona necesita entregar.
             </p>
             <div class="hero-actions">
                 <a class="button button-primary" href="registro">Solicitar acceso</a>
             </div>
         </section>
 
-        <section class="preview-panel enterprise-panel" aria-label="Vista de operacion empresarial">
+        <section class="preview-panel enterprise-panel" aria-label="Resumen de trabajo">
             <div class="preview-header">
-                <span>Centro de operaciones</span>
-                <strong>En seguimiento</strong>
+                <span>Resumen del dia</span>
+                <strong>En marcha</strong>
             </div>
             <div class="metric-grid enterprise-metrics">
                 <article>
-                    <small>Cumplimiento</small>
+                    <small>Avance</small>
                     <strong>87%</strong>
                 </article>
                 <article>
-                    <small>Prioridad alta</small>
+                    <small>Urgentes</small>
                     <strong>12</strong>
                 </article>
                 <article>
-                    <small>Areas activas</small>
+                    <small>Equipos</small>
                     <strong>8</strong>
                 </article>
             </div>
             <div class="task-preview enterprise-task">
                 <span class="priority high"></span>
                 <div>
-                    <strong>Cierre de entregables comerciales</strong>
-                    <small>Gerencia comercial - 75%</small>
+                    <strong>Cierre de reporte semanal</strong>
+                    <small>Equipo comercial - 75%</small>
                 </div>
             </div>
             <div class="task-preview enterprise-task">
                 <span class="priority medium"></span>
                 <div>
-                    <strong>Validacion de procesos internos</strong>
-                    <small>Operaciones - 42%</small>
+                    <strong>Revision de pendientes internos</strong>
+                    <small>Equipo de soporte - 42%</small>
                 </div>
             </div>
             <div class="task-preview enterprise-task">
                 <span class="priority low"></span>
                 <div>
-                    <strong>Reporte semanal de desempeno</strong>
-                    <small>Direccion general - completado</small>
+                    <strong>Entrega de informe final</strong>
+                    <small>Equipo administrativo - completado</small>
                 </div>
             </div>
         </section>
@@ -75,18 +75,18 @@
     <section class="business-strip" aria-label="Capacidades principales">
         <article>
             <span>01</span>
-            <strong>Asignacion por areas</strong>
-            <p>Distribuye responsabilidades por equipos, lideres y responsables directos.</p>
+            <strong>Equipos claros</strong>
+            <p>Agrupa personas por equipo y define quien guia el trabajo.</p>
         </article>
         <article>
             <span>02</span>
-            <strong>Seguimiento ejecutivo</strong>
-            <p>Consulta avances, prioridades y tareas criticas sin perder contexto operativo.</p>
+            <strong>Avances visibles</strong>
+            <p>Revisa que falta, que esta en camino y que ya se termino.</p>
         </article>
         <article>
             <span>03</span>
-            <strong>Control de cumplimiento</strong>
-            <p>Detecta pendientes, retrasos y cargas de trabajo antes de que afecten resultados.</p>
+            <strong>Menos pendientes sueltos</strong>
+            <p>Cada tarea tiene responsable, equipo y estado actualizado.</p>
         </article>
     </section>
 </body>

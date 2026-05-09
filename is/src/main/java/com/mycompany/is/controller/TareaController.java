@@ -20,11 +20,11 @@ public class TareaController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
-        boolean ajax = "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
+        boolean ajax = esAjax(request);
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         if (usuario == null) {
             if (ajax) {
-                responderJson(response, false, "Sesion expirada. Vuelve a ingresar.");
+                responderJson(response, false, "Vuelve a ingresar para guardar tus cambios.");
                 return;
             }
             response.sendRedirect(request.getContextPath() + "/login");
@@ -41,22 +41,30 @@ public class TareaController extends HttpServlet {
                     responderJson(response, true, mensaje);
                     return;
                 }
+            } else if (ajax) {
+                responderJson(response, false, "No pudimos guardar este cambio.");
+                return;
             }
         } catch (Exception e) {
             if (ajax) {
-                responderJson(response, false, "No pudimos procesar la accion. Intentalo nuevamente.");
+                responderJson(response, false, "No pudimos guardar este cambio. Intentalo otra vez.");
                 return;
             }
-            request.getSession().setAttribute("flashError", "No pudimos procesar la accion. Intentalo nuevamente.");
+            request.getSession().setAttribute("flashError", "No pudimos guardar el cambio. Intentalo otra vez.");
         }
 
         response.sendRedirect(request.getContextPath() + "/dashboard");
     }
 
+    private boolean esAjax(HttpServletRequest request) {
+        return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"))
+                || "1".equals(request.getParameter("ajax"));
+    }
+
     private void asignarTarea(HttpServletRequest request, Usuario usuario) throws Exception {
         boolean lider = "lider".equalsIgnoreCase(usuario.getRol());
         if (!lider) {
-            request.getSession().setAttribute("flashError", "Solo los lideres pueden delegar tareas.");
+            request.getSession().setAttribute("flashError", "Esta opcion solo esta disponible para lideres.");
             return;
         }
 
@@ -66,15 +74,15 @@ public class TareaController extends HttpServlet {
         String prioridad = valor(request.getParameter("prioridad"));
 
         if (titulo.isEmpty() || responsableId <= 0 || grupoId <= 0 || prioridad.isEmpty()) {
-            request.getSession().setAttribute("flashError", "Completa los datos principales de la tarea.");
+            request.getSession().setAttribute("flashError", "Completa los datos de la tarea.");
             return;
         }
         if (!grupoDao.esLiderDeGrupo(usuario.getId(), grupoId)) {
-            request.getSession().setAttribute("flashError", "No puedes asignar tareas fuera de tu grupo.");
+            request.getSession().setAttribute("flashError", "Elige un equipo que tengas asignado.");
             return;
         }
         if (!grupoDao.usuarioPerteneceGrupo(responsableId, grupoId)) {
-            request.getSession().setAttribute("flashError", "El responsable debe pertenecer al grupo seleccionado.");
+            request.getSession().setAttribute("flashError", "Esa persona no pertenece al equipo elegido.");
             return;
         }
 
@@ -90,7 +98,7 @@ public class TareaController extends HttpServlet {
             tarea.setFechaLimite(LocalDate.parse(fechaLimite));
         }
         tareaDao.crear(tarea);
-        request.getSession().setAttribute("flashExito", "Tarea asignada correctamente.");
+        request.getSession().setAttribute("flashExito", "Tarea creada correctamente.");
     }
 
     private String actualizarTarea(HttpServletRequest request, Usuario usuario) throws Exception {
@@ -99,7 +107,7 @@ public class TareaController extends HttpServlet {
         boolean trabajador = "usuario".equalsIgnoreCase(usuario.getRol());
 
         if (tareaId <= 0 || !trabajador) {
-            request.getSession().setAttribute("flashError", "Selecciona una tarea valida.");
+            request.getSession().setAttribute("flashError", "No encontramos esa tarea.");
             throw new IllegalArgumentException("Tarea no disponible");
         }
 
@@ -112,10 +120,10 @@ public class TareaController extends HttpServlet {
         );
 
         if (actualizado) {
-            request.getSession().setAttribute("flashExito", "Avance actualizado correctamente.");
-            return "Avance actualizado correctamente.";
+            request.getSession().setAttribute("flashExito", "Avance guardado.");
+            return "Avance guardado.";
         } else {
-            request.getSession().setAttribute("flashError", "No se encontro una tarea disponible para actualizar.");
+            request.getSession().setAttribute("flashError", "No encontramos esa tarea.");
             throw new IllegalArgumentException("Tarea no disponible");
         }
     }

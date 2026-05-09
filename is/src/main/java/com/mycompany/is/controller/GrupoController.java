@@ -25,7 +25,7 @@ public class GrupoController extends HttpServlet {
             return;
         }
         if (!"admin".equalsIgnoreCase(usuario.getRol())) {
-            request.getSession().setAttribute("flashError", "Solo el administrador puede gestionar grupos.");
+            request.getSession().setAttribute("flashError", "Esta opcion solo esta disponible para administradores.");
             response.sendRedirect(request.getContextPath() + "/dashboard");
             return;
         }
@@ -38,7 +38,7 @@ public class GrupoController extends HttpServlet {
                 asignarMiembro(request);
             }
         } catch (Exception e) {
-            request.getSession().setAttribute("flashError", "No pudimos actualizar el grupo. Intentalo nuevamente.");
+            request.getSession().setAttribute("flashError", "No pudimos guardar el equipo. Intentalo otra vez.");
         }
 
         response.sendRedirect(request.getContextPath() + "/dashboard");
@@ -48,7 +48,7 @@ public class GrupoController extends HttpServlet {
         String nombre = valor(request.getParameter("nombre"));
         int liderId = entero(request.getParameter("liderId"));
         if (nombre.isEmpty() || liderId <= 0) {
-            request.getSession().setAttribute("flashError", "Indica nombre y lider del grupo.");
+            request.getSession().setAttribute("flashError", "Indica el nombre del equipo y su guia.");
             return;
         }
 
@@ -60,18 +60,18 @@ public class GrupoController extends HttpServlet {
         int grupoId = grupoDao.crear(grupo);
         grupoDao.asignarMiembro(grupoId, liderId);
         usuarioDao.actualizarRol(liderId, "lider");
-        request.getSession().setAttribute("flashExito", "Grupo creado con lider asignado.");
+        request.getSession().setAttribute("flashExito", "Equipo creado correctamente.");
     }
 
     private void asignarMiembro(HttpServletRequest request) throws Exception {
         int grupoId = entero(request.getParameter("grupoId"));
         int usuarioId = entero(request.getParameter("usuarioId"));
         if (grupoId <= 0 || usuarioId <= 0) {
-            request.getSession().setAttribute("flashError", "Selecciona grupo y trabajador.");
+            request.getSession().setAttribute("flashError", "Selecciona equipo y persona.");
             return;
         }
         grupoDao.asignarMiembro(grupoId, usuarioId);
-        request.getSession().setAttribute("flashExito", "Trabajador agregado al grupo.");
+        request.getSession().setAttribute("flashExito", "Persona agregada al equipo.");
     }
 
     private String valor(String texto) {
